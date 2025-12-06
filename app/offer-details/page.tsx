@@ -1,13 +1,12 @@
 "use client";
 
-
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { getOfferById } from "@/lib/offer-service";
 
-export default function OfferDetailsPage() {
+function OfferDetailsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const offerId = searchParams.get("offerId");
@@ -67,5 +66,22 @@ export default function OfferDetailsPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+export default function OfferDetailsPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-xl mx-auto py-10">
+        <Card className="p-6">
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>Loading...</span>
+          </div>
+        </Card>
+      </div>
+    }>
+      <OfferDetailsContent />
+    </Suspense>
   );
 }

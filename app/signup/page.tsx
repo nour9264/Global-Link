@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Upload, ArrowLeft } from "lucide-react"
+import { Upload, ArrowLeft, Loader2 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -17,7 +17,7 @@ import Image from "next/image"
 
 type SignupStep = "email" | "otp" | "details"
 
-export default function SignUpPage() {
+function SignUpContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const role = searchParams.get("role") || "buyer"
@@ -40,7 +40,7 @@ export default function SignUpPage() {
   const [country, setCountry] = useState("")
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
-  
+
   // Traveler-specific image fields
   const [identityCardImage, setIdentityCardImage] = useState<File | null>(null)
   const [identityCardImagePreview, setIdentityCardImagePreview] = useState<string | null>(null)
@@ -117,17 +117,17 @@ export default function SignUpPage() {
     if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match"
     if (!country.trim()) newErrors.country = "Country is required"
     if (!city.trim()) newErrors.city = "City is required"
-    
+
     // Address is optional for traveler but required for buyer
     if (role === "buyer" && !address.trim()) {
       newErrors.address = "Address is required"
     }
-    
+
     // Image validation
     if (profileImage && profileImage.size > 5 * 1024 * 1024) {
       newErrors.profileImage = "Image size must be less than 5MB"
     }
-    
+
     // Traveler-specific required fields
     if (role === "traveler") {
       if (!identityCardImage) {
@@ -135,13 +135,13 @@ export default function SignUpPage() {
       } else if (identityCardImage.size > 5 * 1024 * 1024) {
         newErrors.identityCardImage = "Identity card image must be less than 5MB"
       }
-      
+
       if (!profileImage) {
         newErrors.userPhoto = "User photo is required"
       } else if (profileImage.size > 5 * 1024 * 1024) {
         newErrors.userPhoto = "User photo must be less than 5MB"
       }
-      
+
       if (passportImage && passportImage.size > 5 * 1024 * 1024) {
         newErrors.passportImage = "Passport image must be less than 5MB"
       }
@@ -169,9 +169,9 @@ export default function SignUpPage() {
           profileImage: profileImage || undefined,
           otp,
         }
-        
+
         await registerBuyer(registrationData)
-        
+
         // If profile image was uploaded, store it temporarily until we can upload it separately
         if (profileImage && typeof window !== "undefined") {
           const reader = new FileReader()
@@ -181,7 +181,7 @@ export default function SignUpPage() {
           }
           reader.readAsDataURL(profileImage)
         }
-        
+
         toast.success("Buyer account created successfully!")
         router.push("/buyer")
       } else {
@@ -201,9 +201,9 @@ export default function SignUpPage() {
           passportImage: passportImage || undefined, // Optional for traveler
           otp,
         }
-        
+
         await registerTraveler(registrationData)
-        
+
         // If profile image was uploaded, store it temporarily
         if (profileImage && typeof window !== "undefined") {
           const reader = new FileReader()
@@ -212,7 +212,7 @@ export default function SignUpPage() {
           }
           reader.readAsDataURL(profileImage)
         }
-        
+
         toast.success("Traveler account created successfully!")
         router.push("/traveler")
       }
@@ -324,7 +324,7 @@ export default function SignUpPage() {
                 />
               </div>
             </div>
-            
+
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Your GlobalLink Account</h1>
             <p className="text-sm text-gray-600">
               {step === "email" && "Start by verifying your email address"}
@@ -686,5 +686,23 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <div className="flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-[#0088cc]" />
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   )
 }

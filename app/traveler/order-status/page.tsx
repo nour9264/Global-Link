@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { TravelerLayout } from "@/components/traveler-layout"
 import { Card } from "@/components/ui/card"
@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { initiateConversation, resolveConversation } from "@/lib/chat-service"
 
-export default function OrderStatusPage() {
+function OrderStatusContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const matchId = searchParams.get("matchId")
@@ -387,19 +387,19 @@ export default function OrderStatusPage() {
                                     console.log('❌ Cannot start chat:', { paymentCompleted, effectiveMatchIdHook, itemDetails })
                                     return
                                 }
-                                
+
                                 if (!itemDetails.requestId || !itemDetails.buyerId) {
                                     console.error('❌ Missing required IDs:', { requestId: itemDetails.requestId, buyerId: itemDetails.buyerId })
                                     toast.error('Unable to start chat - missing information')
                                     return
                                 }
-                                
+
                                 try {
                                     setActionLoading(true)
-                                    
+
                                     // First, try to resolve existing conversation
                                     let conversationId = await resolveConversation(itemDetails.requestId, itemDetails.buyerId)
-                                    
+
                                     // If no conversation exists, initialize one
                                     if (!conversationId) {
                                         console.log('🔵 No existing conversation, initializing new one...')
@@ -407,7 +407,7 @@ export default function OrderStatusPage() {
                                         // Try to resolve again after initialization
                                         conversationId = await resolveConversation(itemDetails.requestId, itemDetails.buyerId)
                                     }
-                                    
+
                                     console.log('✅ Conversation ready:', conversationId)
                                     // Navigate to chat page
                                     router.push('/traveler/chat')
@@ -500,5 +500,19 @@ export default function OrderStatusPage() {
                 </Dialog >
             </div >
         </TravelerLayout >
+    )
+}
+
+export default function OrderStatusPage() {
+    return (
+        <Suspense fallback={
+            <TravelerLayout>
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                </div>
+            </TravelerLayout>
+        }>
+            <OrderStatusContent />
+        </Suspense>
     )
 }
