@@ -19,6 +19,12 @@ async function optimizeImages() {
             output: 'globallink-logo-dark.webp',
             width: 160,
             quality: 90
+        },
+        {
+            input: 'world-map.png',
+            output: 'world-map.webp',
+            width: 3840, // Max width for 4K displays
+            quality: 85
         }
     ];
 

@@ -1,23 +1,41 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { Lock, Workflow, Users, MessageSquare, Shield, Rocket } from "lucide-react"
-import { TracingBeam } from "@/components/ui/tracing-beam"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards"
+import { TracingBeam } from "@/components/ui/tracing-beam"
 import SpotlightCard from "@/components/ui/spotlight-card"
 import { Meteors } from "@/components/ui/meteors"
-import { GlobeDemo } from "@/components/globe-demo"
-import LaserFlow from "@/components/ui/laser-flow"
 import GlareHover from "@/components/ui/glare-hover"
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision"
 import { BackgroundGradient } from "@/components/ui/background-gradient"
 import SplitText from "@/components/ui/split-text"
 import BlurText from "@/components/ui/blur-text"
 import TextType from "@/components/ui/text-type"
+
+// Only dynamically import the HEAVIEST components (Three.js based)
+const GlobeDemo = dynamic(() => import("@/components/globe-demo").then(mod => ({ default: mod.GlobeDemo })), {
+  loading: () => <div className="w-full h-[400px] md:h-[600px] bg-muted/50 rounded-xl animate-pulse" />,
+  ssr: false
+})
+
+const LaserFlow = dynamic(() => import("@/components/ui/laser-flow"), {
+  loading: () => null,
+  ssr: false
+})
+
+const BackgroundBeamsWithCollision = dynamic(() => import("@/components/ui/background-beams-with-collision").then(mod => ({ default: mod.BackgroundBeamsWithCollision })), {
+  loading: () => null,
+  ssr: false
+})
+
+const InfiniteMovingCards = dynamic(() => import("@/components/ui/infinite-moving-cards").then(mod => ({ default: mod.InfiniteMovingCards })), {
+  loading: () => <div className="w-full h-[200px] bg-muted/50 rounded-xl animate-pulse" />,
+  ssr: false
+})
 
 // Global animation configuration
 const ANIMATION_CONFIG = {
@@ -73,6 +91,9 @@ export default function LandingPage() {
               height={700}
               className="w-full h-full object-cover"
               priority
+              fetchPriority="high"
+              sizes="100vw"
+              quality={75}
             />
           </div>
 
