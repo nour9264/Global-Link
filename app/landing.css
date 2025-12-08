@@ -1,0 +1,12 @@
+/* Import all shadow landing page CSS in correct order */
+@import './shadow/App.css';
+@import './shadow/index.css';
+@import './shadow/components/Header.css';
+@import './shadow/components/Hero.css';
+@import './shadow/components/HowItWorks.css';
+@import './shadow/components/UseCases.css';
+@import './shadow/components/Comparison.css';
+@import './shadow/components/PlatformFeatures.css';
+@import './shadow/components/Testimonials.css';
+@import './shadow/components/FAQ.css';
+@import './shadow/components/Footer.css';

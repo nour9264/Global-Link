@@ -150,43 +150,6 @@ export default function BuyerProfilePage() {
             />
           </div>
 
-          {/* Ratings Card */}
-          <div className="bg-card rounded-lg border p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">My Ratings</h2>
-            {fetchingRatings ? (
-              <p className="text-sm text-muted-foreground">Loading ratings...</p>
-            ) : !ratings || ratings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No ratings yet</p>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  <div>
-                    <div className="text-lg font-medium">
-                      {(() => {
-                        const nums = ratings.map(r => typeof r.score === 'number' ? r.score : NaN).filter(n => !Number.isNaN(n))
-                        if (nums.length === 0) return 'No numeric ratings'
-                        const avg = (nums.reduce((s, n) => s + n, 0) / nums.length)
-                        return `${avg.toFixed(1)} / 5 (${nums.length})`
-                      })()}
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {ratings.map((r) => (
-                    <div key={r.id || r.createdAt} className="border rounded p-2">
-                      <div className="text-sm text-foreground">
-                        <span className="font-medium">{r.reviewer || 'Anonymous'}</span>
-                        {r.score !== undefined && <span className="ml-2 text-yellow-500">{r.score}★</span>}
-                      </div>
-                      {r.comment && <div className="text-sm text-muted-foreground mt-1">{r.comment}</div>}
-                      {r.createdAt && <div className="text-xs text-muted-foreground mt-1">{new Date(r.createdAt).toLocaleString()}</div>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="flex justify-end">
