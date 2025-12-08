@@ -3,14 +3,22 @@
 import { useState, useEffect, type ReactNode } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Home, Plane, PackageOpen, DollarSign, MessageSquare, Bell, User, LogOut, Menu, X } from "lucide-react"
+import { Home, Plane, PackageOpen, DollarSign, MessageSquare, Bell, User, LogOut, Menu, X, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn, getAvatarUrl } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
-import { useToast } from "@/hooks/use-toast"
+import { toast, Toaster } from "sonner"
 import { ThemeLogo } from "@/components/theme-logo"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "next-themes"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface TravelerLayoutProps {
   children: ReactNode
@@ -22,7 +30,6 @@ const sidebarItems = [
   { icon: PackageOpen, label: "Available Requests", href: "/traveler/available-requests" },
   { icon: DollarSign, label: "Offers", href: "/traveler/offers" },
   { icon: MessageSquare, label: "Chat", href: "/traveler/chat" },
-  { icon: Bell, label: "Notifications", href: "/traveler/notifications" },
   { icon: User, label: "Profile", href: "/traveler/profile" },
 ]
 
@@ -30,8 +37,9 @@ export function TravelerLayout({ children }: TravelerLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logout } = useAuth()
-  const { toast } = useToast()
+  const { theme, setTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
 
   // Lock body scroll when sidebar is open on mobile
   useEffect(() => {
@@ -48,11 +56,15 @@ export function TravelerLayout({ children }: TravelerLayoutProps) {
   const handleLogout = async () => {
     try {
       await logout()
-      toast({ title: 'Success', description: 'Logged out successfully' })
+      toast.success('Logged out successfully')
       router.push("/login")
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to log out', variant: 'destructive' })
+      toast.error('Failed to log out')
     }
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark")
   }
 
   const closeSidebar = () => setSidebarOpen(false)
@@ -202,20 +214,63 @@ export function TravelerLayout({ children }: TravelerLayoutProps) {
               <Menu className="w-5 h-5" />
             </Button>
 
+            {/* Greeting - Hidden on mobile */}
+            <div className="hidden sm:flex flex-1 justify-center">
+              <p className="text-lg font-semibold text-foreground">
+                Hi Traveler, <span className="text-[#0088cc]">{user?.firstName || "User"}</span>
+              </p>
+            </div>
+
             {/* Right Side */}
-            <div className="flex items-center gap-4 ml-auto">
-              <ThemeToggle />
-              <Avatar className="w-9 h-9">
-                <AvatarImage
-                  src={getAvatarUrl(user?.avatarUrl)}
-                  alt={`${getUserName()}'s profile picture`}
-                />
-                <AvatarFallback className="text-xs font-semibold">{getUserInitials()}</AvatarFallback>
-              </Avatar>
-              <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{getUserName()}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
-              </div>
+            <div className="flex items-center gap-3 ml-auto mr-4 sm:mr-8">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 hover:bg-gray-100 dark:hover:bg-gray-800 group">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={getAvatarUrl(user?.avatarUrl)}
+                        alt={`${getUserName()}'s profile picture`}
+                      />
+                      <AvatarFallback className="text-xs font-semibold">{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" alignOffset={-8} forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{getUserName()}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/traveler/profile" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
+                    {theme === "dark" ? (
+                      <>
+                        <Sun className="mr-2 h-4 w-4" />
+                        <span>Light Mode</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="mr-2 h-4 w-4" />
+                        <span>Dark Mode</span>
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 dark:text-red-400">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>
@@ -257,6 +312,7 @@ export function TravelerLayout({ children }: TravelerLayoutProps) {
           </div>
         </footer>
       </div>
+      <Toaster richColors position="top-right" />
     </div>
   )
 }

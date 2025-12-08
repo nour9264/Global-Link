@@ -133,8 +133,8 @@ export default function BuyerCreateRequestPage() {
         <div className="max-w-5xl mx-auto">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create a New Delivery Request</h1>
-            <p className="text-gray-600">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Create a New Delivery Request</h1>
+            <p className="text-muted-foreground">
               Fill out the details below to post your delivery request and connect with travelers across the globe.
               Please provide accurate information for a smooth delivery process.
             </p>
@@ -144,8 +144,8 @@ export default function BuyerCreateRequestPage() {
             {/* Left Column - Item Details */}
             <div className="space-y-6">
               <Card className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Item Details</h2>
-                <p className="text-sm text-gray-600 mb-4">
+                <h2 className="text-lg font-semibold text-foreground mb-4">Item Details</h2>
+                <p className="text-sm text-muted-foreground mb-4">
                   Provide a clear description and photos of the item you need delivered.
                 </p>
 
@@ -238,7 +238,7 @@ export default function BuyerCreateRequestPage() {
                       />
                       <label htmlFor="photoUpload" className="cursor-pointer">
                         <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-600 mb-1">Drag & drop photos here, or click to browse</p>
+                        <p className="text-sm text-muted-foreground mb-1">Drag & drop photos here, or click to browse</p>
                         <Button type="button" variant="outline" size="sm" className="mt-2 bg-transparent">
                           Upload Photos
                         </Button>
@@ -277,8 +277,8 @@ export default function BuyerCreateRequestPage() {
             {/* Right Column - Route & Delivery Timeline */}
             <div className="space-y-6">
               <Card className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Route & Delivery Timeline</h2>
-                <p className="text-sm text-gray-600 mb-4">Specify where and when your item needs to be delivered.</p>
+                <h2 className="text-lg font-semibold text-foreground mb-4">Route & Delivery Timeline</h2>
+                <p className="text-sm text-muted-foreground mb-4">Specify where and when your item needs to be delivered.</p>
 
                 <div className="space-y-4">
                   <div className="space-y-2">

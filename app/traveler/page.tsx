@@ -152,7 +152,7 @@ export default function TravelerDashboard() {
         {/* Welcome Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Welcome Back, Traveler!</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Welcome Back, Traveler!</h1>
             <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Your next adventure awaits. Here's a quick overview of your GlobalLink activity.
             </p>
@@ -170,40 +170,40 @@ export default function TravelerDashboard() {
               <Loader2 className="w-6 h-6 animate-spin text-[#0088cc]" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <Card className="p-4 sm:p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+              <Card className="p-3 sm:p-4 md:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm text-muted-foreground">Total Earnings</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">Total Earnings</span>
                   <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">${stats.totalEarnings}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">${stats.totalEarnings}</div>
                 <p className="text-xs text-muted-foreground mt-1">Since joining GlobalLink</p>
               </Card>
 
-              <Card className="p-4 sm:p-6">
+              <Card className="p-3 sm:p-4 md:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm text-muted-foreground">Upcoming Trips</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">Upcoming Trips</span>
                   <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">{stats.upcomingTrips}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stats.upcomingTrips}</div>
                 <p className="text-xs text-muted-foreground mt-1">Next 30 days</p>
               </Card>
 
-              <Card className="p-4 sm:p-6">
+              <Card className="p-3 sm:p-4 md:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm text-muted-foreground">Pending Offers</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">Pending Offers</span>
                   <Package className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">{stats.pendingOffers}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stats.pendingOffers}</div>
                 <p className="text-xs text-muted-foreground mt-1">Requiring your attention</p>
               </Card>
 
-              <Card className="p-4 sm:p-6">
+              <Card className="p-3 sm:p-4 md:p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm text-muted-foreground">Delivered Packages</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">Delivered Packages</span>
                   <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">{stats.deliveredPackages}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{stats.deliveredPackages}</div>
                 <p className="text-xs text-muted-foreground mt-1">Successfully completed</p>
               </Card>
             </div>
@@ -213,17 +213,17 @@ export default function TravelerDashboard() {
         {/* Quick Actions */}
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3 sm:mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
             <Link href="/traveler/add-trip">
-              <Button className="w-full h-12 sm:h-14 bg-[#0088cc] hover:bg-[#0077b3] text-sm sm:text-base text-white">
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                Add a New Trip
+              <Button className="w-full h-auto min-h-[40px] sm:min-h-[48px] md:min-h-[56px] py-2 sm:py-3 bg-[#0088cc] hover:bg-[#0077b3] text-xs sm:text-sm md:text-base text-white whitespace-normal">
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="leading-tight">Add a New Trip</span>
               </Button>
             </Link>
             <Link href="/traveler/available-requests">
-              <Button className="w-full h-12 sm:h-14 bg-[#0088cc] hover:bg-[#0077b3] text-sm sm:text-base text-white">
-                <Globe className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                Browse Available Requests
+              <Button className="w-full h-auto min-h-[40px] sm:min-h-[48px] md:min-h-[56px] py-2 sm:py-3 bg-[#0088cc] hover:bg-[#0077b3] text-xs sm:text-sm md:text-base text-white whitespace-normal">
+                <Globe className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="leading-tight">Browse Available Requests</span>
               </Button>
             </Link>
           </div>

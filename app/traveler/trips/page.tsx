@@ -99,12 +99,6 @@ export default function MyTripsPage() {
     router.push(`/traveler/trips/${tripId}`)
   }
 
-  // Handle edit button click
-  const handleEditClick = (e: React.MouseEvent, tripId: string) => {
-    e.stopPropagation() // Prevent card click
-    router.push(`/traveler/trips/${tripId}/edit`)
-  }
-
   // Handle delete button click
   const handleDeleteClick = (e: React.MouseEvent, trip: Trip) => {
     e.stopPropagation() // Prevent card click
@@ -121,10 +115,12 @@ export default function MyTripsPage() {
       console.log(`🗑️ [MyTripsPage] Deleting trip: ${tripToDelete.id}`)
       const response = await deleteTrip(tripToDelete.id)
 
-      if (response.isSuccess) {
+      // Handle success - response might be undefined for 204 No Content
+      if (!response || response.isSuccess === true || response.isSuccess === undefined) {
         toast.success("Trip deleted successfully")
         // Remove trip from list
-        setTrips(trips.filter(t => t.id !== tripToDelete.id))
+        const deletedId = tripToDelete.id
+        setTrips(prev => prev.filter(t => t.id !== deletedId))
         setDeleteDialogOpen(false)
         setTripToDelete(null)
       } else {
@@ -257,16 +253,7 @@ export default function MyTripsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 h-8 text-xs"
-                      onClick={(e) => handleEditClick(e, trip.id)}
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="flex-1 h-8 text-xs"
+                      className="w-full h-8 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
                       onClick={(e) => handleDeleteClick(e, trip)}
                     >
                       <Trash2 className="w-3 h-3 mr-1" />

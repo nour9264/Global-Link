@@ -371,7 +371,7 @@ export default function BuyerPaymentPage() {
 
   return (
     <BuyerLayout>
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Page Title */}
         <h1 className="text-3xl font-bold text-foreground">Payment & Escrow</h1>
 
@@ -617,7 +617,7 @@ export default function BuyerPaymentPage() {
                 </div>
               )}
 
-                <Button
+              <Button
                 variant="outline"
                 className="w-full border-[#0088cc] text-[#0088cc] hover:bg-muted"
                 onClick={() => setIsAddingCard(true)}

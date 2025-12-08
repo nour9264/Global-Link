@@ -691,13 +691,13 @@ export async function getAvailableTrips(params?: {
  * Make an offer on a trip
  * Endpoint: POST /api/Offer/trip/{tripId}
  * 
- * @param tripId - The ID of the traveler's trip
- * @param payload - { requestId: string, price: number, message?: string }
- *   requestId: The buyer's request/item that this offer is for
- *   price: The price offered to deliver this request
- *   message: Optional message to the buyer
- * @returns { success: boolean, message?: string } - success flag and error message if failed
- */
+        * @param tripId - The ID of the traveler's trip
+      * @param payload - { requestId: string, price: number, message?: string }
+      * requestId: The buyer's request/item that this offer is for
+      * price: The price offered to deliver this request
+      * message: Optional message to the buyer
+      * @returns { success: boolean, message?: string } - success flag and error message if failed
+        */
 export async function makeOffer(
   tripId: string,
   payload: { requestId: string; price: number; message?: string }

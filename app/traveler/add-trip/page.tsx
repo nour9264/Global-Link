@@ -74,35 +74,35 @@ function LabeledInput({
 export default function AddTripPage() {
   const router = useRouter()
   const { user } = useAuth()
-  
+
   // Origin fields
   const [fromCountry, setFromCountry] = useState("")
   const [fromCity, setFromCity] = useState("")
-  
+
   // Destination fields
   const [toCountry, setToCountry] = useState("")
   const [toCity, setToCity] = useState("")
-  
+
   // Date fields (using datetime-local format)
   const [departureDate, setDepartureDate] = useState("")
   const [returnDate, setReturnDate] = useState("")
-  
+
   // Capacity and weight fields
   const [capacityKg, setCapacityKg] = useState("")
   const [maxPackageWeightKg, setMaxPackageWeightKg] = useState("")
-  
+
   // Notes
   const [notes, setNotes] = useState("")
-  
+
   // Address and receiving window
   const [receiveAddressId, setReceiveAddressId] = useState("")
   const [receiveWindowStartUtc, setReceiveWindowStartUtc] = useState("")
   const [receiveByDeadlineUtc, setReceiveByDeadlineUtc] = useState("")
-  
+
   // Addresses list
   const [addresses, setAddresses] = useState<TravelerAddress[]>([])
   const [loadingAddresses, setLoadingAddresses] = useState(false)
-  
+
   // Form state
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -151,10 +151,10 @@ export default function AddTripPage() {
       try {
         console.log("🔄 [AddTripPage] Fetching addresses...")
         console.log("🔄 [AddTripPage] Current user:", user)
-        
+
         // First, try to get addresses from the user object (might be in addresses.$values)
         let fetchedAddresses: TravelerAddress[] = []
-        
+
         if (user?.addresses?.$values && Array.isArray(user.addresses.$values)) {
           console.log("✅ [AddTripPage] Found addresses in user object:", user.addresses.$values)
           fetchedAddresses = user.addresses.$values.map((addr: any, index: number) => ({
@@ -166,18 +166,18 @@ export default function AddTripPage() {
             isDefault: addr.isDefault || index === 0,
           }))
         }
-        
+
         // If no addresses from user object, try API endpoint
         if (fetchedAddresses.length === 0) {
           console.log("🔄 [AddTripPage] No addresses in user object, trying API endpoint...")
           fetchedAddresses = await getTravelerAddresses()
         }
-        
+
         console.log("📋 [AddTripPage] Final fetched addresses:", fetchedAddresses)
         console.log("📋 [AddTripPage] Number of addresses:", fetchedAddresses.length)
-        
+
         setAddresses(fetchedAddresses)
-        
+
         // Auto-select the address if there's only one (likely the registration address)
         if (fetchedAddresses.length === 1) {
           console.log("✅ [AddTripPage] Auto-selecting single address:", fetchedAddresses[0])
@@ -200,7 +200,7 @@ export default function AddTripPage() {
         setLoadingAddresses(false)
       }
     }
-    
+
     if (user) {
       fetchAddresses()
     }
@@ -284,7 +284,8 @@ export default function AddTripPage() {
 
       const response = await createTrip(tripData)
 
-      if (response.isSuccess) {
+      // Handle success - response might be undefined for 204 No Content
+      if (!response || response.isSuccess === true || response.isSuccess === undefined) {
         toast.success("Trip created successfully!")
         router.push("/traveler/trips")
       } else {
@@ -301,7 +302,7 @@ export default function AddTripPage() {
 
   return (
     <TravelerLayout>
-      <div className="p-8 bg-gray-50 min-h-screen">
+      <div className="p-8 min-h-screen">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -310,7 +311,7 @@ export default function AddTripPage() {
           </div>
 
           {/* Form */}
-          <Card className="p-8 bg-white">
+          <Card className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Origin Location */}
               <div className="space-y-4">
@@ -342,7 +343,7 @@ export default function AddTripPage() {
                       placeholder="e.g., New York"
                       value={fromCity}
                       onChange={(e) => setFromCity(e.target.value)}
-                      className="bg-gray-50"
+                      className=""
                       disabled={isSubmitting}
                       required
                     />
@@ -380,7 +381,7 @@ export default function AddTripPage() {
                       placeholder="e.g., London"
                       value={toCity}
                       onChange={(e) => setToCity(e.target.value)}
-                      className="bg-gray-50"
+                      className=""
                       disabled={isSubmitting}
                       required
                     />
@@ -405,7 +406,7 @@ export default function AddTripPage() {
                         type="datetime-local"
                         value={departureDate}
                         onChange={(e) => setDepartureDate(e.target.value)}
-                        className="bg-gray-50"
+                        className=""
                         disabled={isSubmitting}
                         required
                       />
@@ -426,7 +427,7 @@ export default function AddTripPage() {
                         type="datetime-local"
                         value={returnDate}
                         onChange={(e) => setReturnDate(e.target.value)}
-                        className="bg-gray-50"
+                        className=""
                         disabled={isSubmitting}
                         required
                       />
@@ -438,7 +439,7 @@ export default function AddTripPage() {
 
               {/* Capacity and Weight */}
               <div className="space-y-4">
-                <h2 className="text-base font-semibold text-gray-900">Carrying Capacity</h2>
+                <h2 className="text-base font-semibold text-foreground">Carrying Capacity</h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   <LabeledInput
                     id="capacityKg"
@@ -455,7 +456,7 @@ export default function AddTripPage() {
                       placeholder="e.g., 20"
                       value={capacityKg}
                       onChange={(e) => setCapacityKg(e.target.value)}
-                      className="bg-gray-50"
+                      className=""
                       disabled={isSubmitting}
                       required
                     />
@@ -476,7 +477,7 @@ export default function AddTripPage() {
                       placeholder="e.g., 10"
                       value={maxPackageWeightKg}
                       onChange={(e) => setMaxPackageWeightKg(e.target.value)}
-                      className="bg-gray-50"
+                      className=""
                       disabled={isSubmitting}
                       required
                     />
@@ -486,8 +487,8 @@ export default function AddTripPage() {
 
               {/* Receiving Address and Window */}
               <div className="space-y-4">
-                <h2 className="text-base font-semibold text-gray-900">Item Receiving Details</h2>
-                
+                <h2 className="text-base font-semibold text-foreground">Item Receiving Details</h2>
+
                 <LabeledInput
                   id="receiveAddressId"
                   label="Receiving Address"
@@ -500,11 +501,11 @@ export default function AddTripPage() {
                       <Input
                         value=""
                         disabled
-                        className="bg-gray-50 cursor-not-allowed"
+                        className="cursor-not-allowed"
                         placeholder="No addresses available"
                       />
                       <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                        <strong>No addresses found.</strong> The address from your registration should appear here automatically. 
+                        <strong>No addresses found.</strong> The address from your registration should appear here automatically.
                         If you don't see it, the system is trying to fetch it from multiple sources. Please refresh the page or contact support if the issue persists.
                       </p>
                     </div>
@@ -513,7 +514,7 @@ export default function AddTripPage() {
                       <Input
                         value=""
                         disabled
-                        className="bg-gray-50 cursor-not-allowed"
+                        className="cursor-not-allowed"
                         placeholder="Loading addresses..."
                       />
                       <p className="text-xs text-gray-500">
@@ -522,7 +523,7 @@ export default function AddTripPage() {
                     </div>
                   ) : (
                     <Select value={receiveAddressId} onValueChange={setReceiveAddressId} disabled={isSubmitting || loadingAddresses}>
-                      <SelectTrigger className="bg-gray-50">
+                      <SelectTrigger className="">
                         <SelectValue placeholder={loadingAddresses ? "Loading addresses..." : addresses.length === 1 ? "Your registration address" : "Select receiving address"} />
                       </SelectTrigger>
                       <SelectContent>
@@ -552,7 +553,7 @@ export default function AddTripPage() {
                         type="datetime-local"
                         value={receiveWindowStartUtc}
                         onChange={(e) => setReceiveWindowStartUtc(e.target.value)}
-                        className="bg-gray-50"
+                        className=""
                         disabled={isSubmitting}
                         required
                       />
@@ -573,7 +574,7 @@ export default function AddTripPage() {
                         type="datetime-local"
                         value={receiveByDeadlineUtc}
                         onChange={(e) => setReceiveByDeadlineUtc(e.target.value)}
-                        className="bg-gray-50"
+                        className=""
                         disabled={isSubmitting}
                         required
                       />
@@ -596,7 +597,7 @@ export default function AddTripPage() {
                   placeholder="Any specific items you prefer to carry, or restrictions."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="bg-gray-50 min-h-32"
+                  className="min-h-32"
                   disabled={isSubmitting}
                   required
                 />

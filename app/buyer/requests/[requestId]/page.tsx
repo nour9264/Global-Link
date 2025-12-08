@@ -81,15 +81,15 @@ export default function BuyerRequestDetailPage() {
       case "active":
       case "open":
       case "pending":
-        return "bg-[#0088cc]"
+        return "bg-[#0088cc] text-white"
       case "completed":
       case "accepted":
-        return "bg-green-600"
+        return "bg-green-600 text-white"
       case "cancelled":
       case "rejected":
-        return "bg-red-600"
+        return "bg-red-600 text-white"
       default:
-        return "bg-gray-600"
+        return "bg-gray-600 text-white"
     }
   }
 
@@ -183,7 +183,7 @@ export default function BuyerRequestDetailPage() {
         <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-[#0088cc] mx-auto mb-4" />
-            <p className="text-gray-600">Loading request details...</p>
+            <p className="text-muted-foreground">Loading request details...</p>
           </div>
         </div>
       </BuyerLayout>
@@ -196,8 +196,8 @@ export default function BuyerRequestDetailPage() {
       <BuyerLayout>
         <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
           <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-3">Request not found</h2>
-            <p className="text-gray-600 mb-8">The request you're looking for doesn't exist or has been removed.</p>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">Request not found</h2>
+            <p className="text-muted-foreground mb-8">The request you're looking for doesn't exist or has been removed.</p>
             <Link href="/buyer/requests">
               <Button className="bg-[#0088cc] hover:bg-[#0077b3]">Back to My Requests</Button>
             </Link>
@@ -209,7 +209,7 @@ export default function BuyerRequestDetailPage() {
 
   return (
     <BuyerLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -222,8 +222,8 @@ export default function BuyerRequestDetailPage() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Request Details</h1>
-              <p className="text-sm text-gray-600 mt-1">View and manage your request information</p>
+              <h1 className="text-3xl font-bold text-foreground">Request Details</h1>
+              <p className="text-sm text-muted-foreground mt-1">View and manage your request information</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -290,12 +290,12 @@ export default function BuyerRequestDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Item Details */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Item Details</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Item Details</h3>
               <div className="space-y-4">
                 {request.description && (
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Description</p>
-                    <p className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 p-3 rounded-md">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Description</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap bg-muted p-3 rounded-md">
                       {request.description}
                     </p>
                   </div>
@@ -304,17 +304,17 @@ export default function BuyerRequestDetailPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   {request.category && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Category</p>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Category</p>
                       <div className="flex items-center gap-2">
                         <Tag className="w-4 h-4 text-gray-400" />
-                        <p className="text-sm text-gray-900">{request.category}</p>
+                        <p className="text-sm text-foreground">{request.category}</p>
                       </div>
                     </div>
                   )}
                   {request.itemValue !== undefined && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Item Value</p>
-                      <p className="text-sm text-gray-900">${request.itemValue.toFixed(2)}</p>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Item Value</p>
+                      <p className="text-sm text-foreground">${request.itemValue.toFixed(2)}</p>
                     </div>
                   )}
                 </div>
@@ -323,23 +323,23 @@ export default function BuyerRequestDetailPage() {
 
             {/* Route & Delivery */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Route & Delivery</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Route & Delivery</h3>
               <div className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Origin</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Origin</p>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm text-gray-900">
+                      <p className="text-sm text-foreground">
                         {request.fromCity}, {request.fromCountry}
                       </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Destination</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Destination</p>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm text-gray-900">
+                      <p className="text-sm text-foreground">
                         {request.toCity}, {request.toCountry}
                       </p>
                     </div>
@@ -348,17 +348,17 @@ export default function BuyerRequestDetailPage() {
 
                 {request.targetArrivalDate && (
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Delivery Deadline</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Delivery Deadline</p>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm text-gray-900">{formatDate(request.targetArrivalDate)}</p>
+                      <p className="text-sm text-foreground">{formatDate(request.targetArrivalDate)}</p>
                     </div>
                   </div>
                 )}
 
                 {request.urgency && (
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">Urgency</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Urgency</p>
                     <Badge variant="outline">{request.urgency}</Badge>
                   </div>
                 )}
@@ -367,22 +367,22 @@ export default function BuyerRequestDetailPage() {
 
             {/* Package Information */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Package Information</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Package Information</h3>
               <div className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   {request.estimatedTotalWeightKg !== undefined && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Estimated Weight</p>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Estimated Weight</p>
                       <div className="flex items-center gap-2">
                         <Package className="w-4 h-4 text-gray-400" />
-                        <p className="text-sm text-gray-900">{request.estimatedTotalWeightKg} kg</p>
+                        <p className="text-sm text-foreground">{request.estimatedTotalWeightKg} kg</p>
                       </div>
                     </div>
                   )}
                   {request.totalPackages !== undefined && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">Total Packages</p>
-                      <p className="text-sm text-gray-900">{request.totalPackages}</p>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Total Packages</p>
+                      <p className="text-sm text-foreground">{request.totalPackages}</p>
                     </div>
                   )}
                 </div>
@@ -409,35 +409,35 @@ export default function BuyerRequestDetailPage() {
           <div className="space-y-6">
             {/* Budget & Status */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget & Status</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Budget & Status</h3>
               <div className="space-y-3">
                 {request.budgetMax !== undefined && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Budget</span>
+                    <span className="text-sm text-muted-foreground">Budget</span>
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-foreground">
                         ${request.budgetMax.toFixed(2)}
                       </span>
                     </div>
                   </div>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Status</span>
+                  <span className="text-sm text-muted-foreground">Status</span>
                   <Badge className={getStatusBadgeColor(request.status)}>
                     {request.status || "Pending"}
                   </Badge>
                 </div>
                 {request.createdAt && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Created</span>
-                    <span className="text-sm text-gray-900">{formatDate(request.createdAt)}</span>
+                    <span className="text-sm text-muted-foreground">Created</span>
+                    <span className="text-sm text-foreground">{formatDate(request.createdAt)}</span>
                   </div>
                 )}
                 {request.updatedAt && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Last Updated</span>
-                    <span className="text-sm text-gray-900">{formatDate(request.updatedAt)}</span>
+                    <span className="text-sm text-muted-foreground">Last Updated</span>
+                    <span className="text-sm text-foreground">{formatDate(request.updatedAt)}</span>
                   </div>
                 )}
               </div>
@@ -445,7 +445,7 @@ export default function BuyerRequestDetailPage() {
 
             {/* Quick Actions */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <Button
                   variant="destructive"
@@ -466,7 +466,7 @@ export default function BuyerRequestDetailPage() {
 
             {/* Item Photos */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Item Photos</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Item Photos</h3>
               {validPhotos.length > 0 ? (
                 <div className="space-y-3">
                   {/* Main photo */}

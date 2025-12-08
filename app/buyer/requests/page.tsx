@@ -67,25 +67,26 @@ export default function BuyerRequestsPage() {
     }
   }
 
+  // Fetch requests function
+  const fetchRequests = async () => {
+    setLoading(true)
+    try {
+      console.log("🔄 [BuyerRequestsPage] Fetching requests...")
+      const fetchedRequests = await getMyRequests()
+      console.log("📋 [BuyerRequestsPage] Fetched requests:", fetchedRequests)
+
+      setRequests(fetchedRequests)
+    } catch (error) {
+      console.error("❌ [BuyerRequestsPage] Error fetching requests:", error)
+      toast.error("Failed to load requests. Please try again.")
+      setRequests([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Fetch requests on mount
   useEffect(() => {
-    const fetchRequests = async () => {
-      setLoading(true)
-      try {
-        console.log("🔄 [BuyerRequestsPage] Fetching requests...")
-        const fetchedRequests = await getMyRequests()
-        console.log("📋 [BuyerRequestsPage] Fetched requests:", fetchedRequests)
-
-        setRequests(fetchedRequests)
-      } catch (error) {
-        console.error("❌ [BuyerRequestsPage] Error fetching requests:", error)
-        toast.error("Failed to load requests. Please try again.")
-        setRequests([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
     if (user) {
       fetchRequests()
     }
@@ -107,26 +108,44 @@ export default function BuyerRequestsPage() {
   const handleDeleteConfirm = async () => {
     if (!requestToDelete) return
 
+    console.log("🔥 [DELETE] Starting delete process for:", requestToDelete.id)
     setIsDeleting(true)
     try {
-      console.log(`🗑️ [BuyerRequestsPage] Deleting request: ${requestToDelete.id}`)
+      console.log(`🗑️ [DELETE] Calling deleteRequest for: ${requestToDelete.id}`)
       const response = await deleteRequest(requestToDelete.id)
 
-      if (response.isSuccess) {
+      console.log("📦 [DELETE] Response received:", response)
+      console.log("📦 [DELETE] Response.isSuccess:", response?.isSuccess)
+
+      // Handle success - response might be undefined for 204 No Content
+      if (!response || response.isSuccess === true || response.isSuccess === undefined) {
+        console.log("✅ [DELETE] Success! Removing item from UI")
+
+        // Optimistic update - remove from UI immediately
+        const deletedId = requestToDelete.id
+        setRequests(prev => prev.filter(r => r.id !== deletedId))
+
+        // Show success toast
         toast.success("Request deleted successfully")
-        // Remove request from list
-        setRequests(requests.filter((r) => r.id !== requestToDelete.id))
+
+        // Close dialog
         setDeleteDialogOpen(false)
         setRequestToDelete(null)
+
+        console.log("✅ [DELETE] Item removed from UI")
       } else {
+        console.error("❌ [DELETE] Response.isSuccess is false")
         throw new Error(response.message || "Failed to delete request")
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to delete request"
+      console.error("❌ [DELETE] Error caught:", error)
+      console.error("❌ [DELETE] Error message:", errorMessage)
       toast.error(errorMessage)
       console.error("❌ [BuyerRequestsPage] Error deleting request:", error)
     } finally {
       setIsDeleting(false)
+      console.log("🔥 [DELETE] Delete process complete")
     }
   }
 
@@ -168,7 +187,7 @@ export default function BuyerRequestsPage() {
 
   return (
     <BuyerLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -190,7 +209,7 @@ export default function BuyerRequestsPage() {
               className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
               onClick={() => handleRequestClick(request.id)}
             >
-                <div className="relative h-32 bg-gradient-to-r from-blue-500 to-cyan-500">
+              <div className="relative h-32 bg-gradient-to-r from-blue-500 to-cyan-500">
                 {request.photos && request.photos.length > 0 ? (
                   <Image
                     src={ensureAbsoluteUrl(request.photos[0]) || "/european-city-skyline.jpg"}
@@ -256,9 +275,9 @@ export default function BuyerRequestsPage() {
                   </div>
                   <div className="flex items-center gap-2 pt-2">
                     <Button
-                      variant="destructive"
+                      variant="outline"
                       size="sm"
-                      className="flex-1 h-8 text-xs"
+                      className="flex-1 h-8 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
                       onClick={(e) => handleDeleteClick(e, request)}
                     >
                       <Trash2 className="w-3 h-3 mr-1" />
@@ -288,7 +307,14 @@ export default function BuyerRequestsPage() {
                 disabled={isDeleting}
                 className="bg-red-600 hover:bg-red-700"
               >
-                {isDeleting ? "Deleting..." : "Delete"}
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

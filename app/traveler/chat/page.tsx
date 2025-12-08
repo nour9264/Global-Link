@@ -76,7 +76,18 @@ export default function TravelerChatPage() {
         timestamp: ts || "",
         isCurrentUser: isMine,
       }
-      setMessages(prev => [...prev, newMessage])
+      // Prevent duplicate messages by checking if message already exists
+      setMessages(prev => {
+        const exists = prev.some(m =>
+          m.id === newMessage.id ||
+          (m.text === newMessage.text && m.senderId === newMessage.senderId && Math.abs(new Date().getTime() - Date.now()) < 2000)
+        )
+        if (exists) {
+          console.log("[DEBUG][Traveler] Duplicate message detected, skipping:", newMessage.id)
+          return prev
+        }
+        return [...prev, newMessage]
+      })
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100)
     }
     loadConversations()

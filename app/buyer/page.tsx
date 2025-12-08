@@ -51,31 +51,32 @@ export default function BuyerDashboard() {
     <BuyerLayout>
       <div className="space-y-6 sm:space-y-8 bg-background min-h-screen p-4 sm:p-6">
         {/* Page Title */}
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Buyer Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Buyer Dashboard</h1>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-4xl">
-          <Card className="p-4 sm:p-6 flex flex-col items-center text-center">
+        {/* Action Cards */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 max-w-4xl">
+          <Card className="p-3 sm:p-6 flex flex-col items-center text-center">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0088cc]/10 flex items-center justify-center mb-3 sm:mb-4">
               <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-[#0088cc]" />
             </div>
-            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">Create New Request</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">Easily post a new item request to our network of travelers.</p>
-            <Link href="/buyer/create-request">
-              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white text-sm">Create New Request</Button>
+            <h2 className="text-sm sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">Create New Request</h2>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mb-3 sm:mb-4">Easily post a new item request to our network of travelers.</p>
+            <Link href="/buyer/create-request" className="w-full">
+              <Button className="w-full h-auto min-h-[40px] sm:min-h-[44px] py-2 bg-[#0088cc] hover:bg-[#0077b3] text-white text-xs sm:text-sm whitespace-normal leading-tight">Create New Request</Button>
             </Link>
           </Card>
 
-          <Card className="p-4 sm:p-6 flex flex-col items-center text-center">
+          <Card className="p-3 sm:p-6 flex flex-col items-center text-center">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0088cc]/10 flex items-center justify-center mb-3 sm:mb-4">
               <Plane className="w-5 h-5 sm:w-6 sm:h-6 text-[#0088cc]" />
             </div>
-            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">Find Travelers</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            <h2 className="text-sm sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">Find Travelers</h2>
+            <p className="text-[10px] sm:text-sm text-muted-foreground mb-3 sm:mb-4">
               Browse available travelers and trips to find a match for your delivery.
             </p>
-            <Link href="/buyer/find-travelers">
-              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white text-sm">Find Travelers</Button>
+            <Link href="/buyer/find-travelers" className="w-full">
+              <Button className="w-full h-auto min-h-[40px] sm:min-h-[44px] py-2 bg-[#0088cc] hover:bg-[#0077b3] text-white text-xs sm:text-sm whitespace-normal leading-tight">Find Travelers</Button>
             </Link>
           </Card>
         </div>

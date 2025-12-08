@@ -340,72 +340,45 @@ export default function BuyerFindTravelersPage() {
         </div>
 
         {/* Search Filters */}
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Search Filters</h2>
-          <form className="grid grid-cols-1 md:grid-cols-5 gap-4" onKeyDown={handleKeyDown}>
-            <div className="space-y-2">
-              <Label htmlFor="origin">Origin</Label>
+        <Card className="p-3 sm:p-4">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3">Search Filters</h2>
+          <form className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" onKeyDown={handleKeyDown}>
+            <div className="space-y-1.5">
+              <Label htmlFor="origin" className="text-sm">Origin</Label>
               <Input
                 id="origin"
                 placeholder="e.g., London"
                 value={origin}
                 onChange={(event) => setOrigin(event.target.value)}
+                className="h-9 text-sm"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="destination">Destination</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="destination" className="text-sm">Destination</Label>
               <Input
                 id="destination"
                 placeholder="e.g., New York"
                 value={destination}
                 onChange={(event) => setDestination(event.target.value)}
+                className="h-9 text-sm"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="travelDates">Departure Date</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="travelDates" className="text-sm">Departure Date</Label>
               <Input
                 id="travelDates"
                 type="date"
                 value={departureDate}
                 onChange={(event) => setDepartureDate(event.target.value)}
+                className="h-9 text-sm"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="minRating">Min. Rating</Label>
-              <Select value={minRating} onValueChange={setMinRating}>
-                <SelectTrigger id="minRating">
-                  <SelectValue placeholder="All ratings" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">All Ratings</SelectItem>
-                  <SelectItem value="3">3 Stars & Up</SelectItem>
-                  <SelectItem value="4">4 Stars & Up</SelectItem>
-                  <SelectItem value="4.5">4.5 Stars & Up</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="languages">Languages</Label>
-              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                <SelectTrigger id="languages">
-                  <SelectValue placeholder="Select languages" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="english">English</SelectItem>
-                  <SelectItem value="spanish">Spanish</SelectItem>
-                  <SelectItem value="french">French</SelectItem>
-                  <SelectItem value="german">German</SelectItem>
-                  <SelectItem value="chinese">Chinese</SelectItem>
-                  <SelectItem value="arabic">Arabic</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
           </form>
-          <div className="mt-4 flex gap-3">
+          <div className="mt-3 flex flex-wrap gap-2">
             <Button
               type="button"
-              className="bg-[#0088cc] hover:bg-[#0077b3] text-white"
+              className="bg-[#0088cc] hover:bg-[#0077b3] text-white h-9 text-sm"
               onClick={handleSearch}
               disabled={loading}
             >
@@ -419,7 +392,7 @@ export default function BuyerFindTravelersPage() {
               )}
             </Button>
             {(origin || destination || departureDate || minRating !== "0" || selectedLanguage !== "any") && (
-              <Button type="button" variant="outline" onClick={handleReset} disabled={loading}>
+              <Button type="button" variant="outline" onClick={handleReset} disabled={loading} className="h-9 text-sm">
                 Reset Filters
               </Button>
             )}
@@ -472,9 +445,11 @@ export default function BuyerFindTravelersPage() {
                         {traveler.name || "Traveler"}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center">
-                        <span className="font-medium text-[#f3c623]">
-                          {traveler.rating ? traveler.rating.toFixed(1) : "No rating"}
-                        </span>
+                        {traveler.rating && (
+                          <span className="font-medium text-[#f3c623]">
+                            {traveler.rating.toFixed(1)}
+                          </span>
+                        )}
                         {traveler.totalReviews !== undefined && (
                           <span>({traveler.totalReviews} review{traveler.totalReviews === 1 ? "" : "s"})</span>
                         )}

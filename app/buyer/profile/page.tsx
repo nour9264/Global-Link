@@ -33,20 +33,20 @@ export default function BuyerProfilePage() {
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
-      const [p, addrs, rts] = await Promise.all([getProfile(), getAddresses(), getRatings()])
-      if (!mounted) return
-      if (p) {
-        setProfile(p)
-        setFullName(p.fullName || "")
-        setEmail(p.email || "")
-  if (typeof (p as any).twoFactorEnabled !== "undefined") setTwoFactorEnabled(!!(p as any).twoFactorEnabled)
-      }
-      setAddresses(addrs)
-      setRatings(rts || [])
-      setFetchingAddresses(false)
-      setFetchingRatings(false)
-    })()
+      ; (async () => {
+        const [p, addrs, rts] = await Promise.all([getProfile(), getAddresses(), getRatings()])
+        if (!mounted) return
+        if (p) {
+          setProfile(p)
+          setFullName(p.fullName || "")
+          setEmail(p.email || "")
+          if (typeof (p as any).twoFactorEnabled !== "undefined") setTwoFactorEnabled(!!(p as any).twoFactorEnabled)
+        }
+        setAddresses(addrs)
+        setRatings(rts || [])
+        setFetchingAddresses(false)
+        setFetchingRatings(false)
+      })()
     return () => {
       mounted = false
     }
@@ -83,7 +83,7 @@ export default function BuyerProfilePage() {
   }
   return (
     <BuyerLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <h1 className="text-3xl font-bold text-foreground">Profile and Settings</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -129,18 +129,18 @@ export default function BuyerProfilePage() {
                   Reset Password
                 </Button>
               </Link>
- 
+
             </div>
           </div>
 
-          
+
           {/* Address List */}
           <div className="bg-card rounded-lg border p-6">
-            <AddressList 
+            <AddressList
               addresses={addresses}
               onAddressAdded={(addr) => setAddresses(prev => [...prev, addr])}
               onAddressDeleted={(id) => setAddresses(prev => prev.filter(a => a.id !== id))}
-              onAddressUpdated={(id, updated) => setAddresses(prev => prev.map(a => 
+              onAddressUpdated={(id, updated) => setAddresses(prev => prev.map(a =>
                 a.id === id ? { ...a, ...updated } : a
               ))}
               onDefaultChanged={(id) => setAddresses(prev => prev.map(a => ({

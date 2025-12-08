@@ -283,9 +283,9 @@ export default function BuyerOffersPage() {
 
           <TabsContent value="from-travelers" className="space-y-4 mt-4">
             {/* Request Selector */}
-            <Card className="p-6 bg-blue-50 border border-blue-200">
+            <Card className="p-6">
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Select a request to view offers from travellers:
                 </label>
                 {requestsLoading ? (

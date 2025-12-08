@@ -169,7 +169,7 @@ export default function AvailableRequestsPage() {
 
   return (
     <TravelerLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Available Requests</h1>
           <p className="text-muted-foreground mt-1">Browse delivery requests that match your travel plans</p>
@@ -292,7 +292,7 @@ export default function AvailableRequestsPage() {
                     )}
                   </div>
                   <Button
-                      className="w-full bg-[#0088cc] hover:bg-[#0077b3] text-white"
+                    className="w-full bg-[#0088cc] hover:bg-[#0077b3] text-white"
                     onClick={() => handleMakeOffer(request.id)}
                   >
                     Make Offer
