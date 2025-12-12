@@ -28,10 +28,30 @@ export interface Rating {
   createdAt?: string
 }
 
+// Helper to parse profile response from different formats
+function parseProfileResponse(data: any): UserProfile | null {
+  if (!data) return null
+
+  return {
+    id: data.id || data.userId || data.ID,
+    fullName: data.fullName || data.FullName ||
+      `${data.firstName || data.FirstName || ''} ${data.lastName || data.LastName || ''}`.trim(),
+    email: data.email || data.Email,
+    avatarUrl: data.avatarUrl || data.AvatarUrl || data.profilePhotoUrl,
+    phone: data.phone || data.phoneNumber || data.PhoneNumber,
+  }
+}
+
 export async function getProfile(): Promise<UserProfile | null> {
   try {
-    const res = await apiClient.get('/api/UserProfile')
-    return res.data || null
+    const res = await apiClient.get('/api/Auth/profile')
+    console.log('[user-profile] getProfile raw response:', res.data)
+
+    // Parse response to ensure proper format
+    const parsed = parseProfileResponse(res.data)
+    console.log('[user-profile] getProfile parsed:', parsed)
+
+    return parsed
   } catch (err: any) {
     // Normalize and log more detailed error info safely
     const e: any = err || {}
@@ -59,18 +79,45 @@ export async function getProfile(): Promise<UserProfile | null> {
 
 export async function uploadAvatar(file: File): Promise<string | null> {
   try {
+    console.log('[user-profile] uploadAvatar starting...', { fileName: file.name, fileSize: file.size, fileType: file.type })
+
     const fd = new FormData()
-    fd.append('avatar', file)
-    // Do not set Content-Type for multipart/form-data, browser will set it with boundary
+    fd.append('Avatar', file)
+
+    console.log('[user-profile] Sending PUT request to /api/UserProfile/avatar')
+
     const res = await apiClient.put('/api/UserProfile/avatar', fd)
-    // expect backend to return { avatarUrl: '...' } or full profile
-    return res.data?.avatarUrl || res.data?.data?.avatarUrl || null
+
+    console.log('[user-profile] uploadAvatar response:', {
+      status: res.status,
+      data: res.data,
+    })
+
+    // Backend returns success message but NOT the avatar URL
+    // We need to re-fetch the profile to get the updated avatar URL
+    if (res.status === 200) {
+      console.log('[user-profile] Upload successful, fetching updated profile...')
+
+      // Re-fetch profile to get updated avatar URL
+      const updatedProfile = await getProfile()
+
+      if (updatedProfile?.avatarUrl) {
+        console.log('[user-profile] Got updated avatarUrl:', updatedProfile.avatarUrl)
+        return updatedProfile.avatarUrl
+      }
+
+      console.warn('[user-profile] Upload succeeded but could not fetch updated avatar URL')
+      // Return a placeholder to indicate success even if we can't get the URL
+      return 'success'
+    }
+
+    return null
   } catch (err) {
     const error = err as any
-    console.error('[user-profile] uploadAvatar error', {
+    console.error('[user-profile] uploadAvatar error:', {
+      message: error?.message,
       status: error?.response?.status,
       data: error?.response?.data,
-      message: error?.message,
     })
     return null
   }
@@ -82,10 +129,10 @@ export async function getAddresses(): Promise<Address[]> {
     const raw = Array.isArray(res.data)
       ? res.data
       : res.data?.data && Array.isArray(res.data.data)
-      ? res.data.data
-      : res.data?.$values && Array.isArray(res.data.$values)
-      ? res.data.$values
-      : []
+        ? res.data.data
+        : res.data?.$values && Array.isArray(res.data.$values)
+          ? res.data.$values
+          : []
 
     // Normalize backend address shape (line1/line2) to frontend shape (addressLine1/addressLine2)
     const mapped: Address[] = raw.map((a: any) => ({
@@ -263,10 +310,10 @@ export async function getRatings(): Promise<any> {
     const raw = Array.isArray(res.data)
       ? res.data
       : res.data?.data && Array.isArray(res.data.data)
-      ? res.data.data
-      : res.data?.$values && Array.isArray(res.data.$values)
-      ? res.data.$values
-      : []
+        ? res.data.data
+        : res.data?.$values && Array.isArray(res.data.$values)
+          ? res.data.$values
+          : []
 
     const mapped: Rating[] = raw.map((r: any) => ({
       id: r.id || r.ratingId || undefined,
@@ -283,13 +330,40 @@ export async function getRatings(): Promise<any> {
   }
 }
 
-// Update profile - backend may accept PUT /api/UserProfile with JSON body
-export async function updateProfile(payload: Partial<UserProfile>): Promise<UserProfile | null> {
+// Update profile - backend expects PUT /api/Auth/profile with multipart/form-data
+export async function updateProfile(payload: {
+  firstName?: string
+  lastName?: string
+  avatar?: File
+}): Promise<UserProfile | null> {
   try {
-    const res = await apiClient.put('/api/UserProfile', payload)
-    return res.data || null
+    const fd = new FormData()
+
+    // Add fields in PascalCase as backend expects
+    if (payload.firstName) fd.append('FirstName', payload.firstName)
+    if (payload.lastName) fd.append('LastName', payload.lastName)
+    if (payload.avatar) fd.append('Avatar', payload.avatar)
+
+    console.log('[user-profile] updateProfile called with:', {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      hasAvatar: !!payload.avatar,
+    })
+
+    const res = await apiClient.put('/api/Auth/profile', fd)
+
+    console.log('[user-profile] updateProfile response:', res.data)
+
+    // Parse response - backend may return profile in different formats
+    const profileData = res.data?.data || res.data
+    return parseProfileResponse(profileData)
   } catch (err) {
-    console.error('[user-profile] updateProfile error', err)
+    const error = err as any
+    console.error('[user-profile] updateProfile error', {
+      status: error?.response?.status,
+      data: error?.response?.data,
+      message: error?.message,
+    })
     return null
   }
 }

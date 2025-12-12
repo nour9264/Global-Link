@@ -95,19 +95,18 @@ export default function BuyerCreateRequestPage() {
       if (estimatedTotalWeightKg) formData.append("EstimatedTotalWeightKg", String(parseFloat(estimatedTotalWeightKg)))
       formData.append("IsFragile", String(isFragile))
 
-      // Optionally include photos if backend supports it (field name 'Photos')
-      uploadedFiles.forEach((file, idx) => {
-        formData.append("Photos", file, file.name || `photo_${idx + 1}.jpg`)
-      })
+      // Send first image only (backend expects 'Image' field - singular)
+      if (uploadedFiles.length > 0) {
+        formData.append("Image", uploadedFiles[0])
+      }
 
-      // Send the multipart form with photos
-      const response = await apiClient.post("/api/BuyerRequest", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      // Send the multipart form - don't set Content-Type header, browser will set it with boundary
+      const response = await apiClient.post("/api/BuyerRequest", formData)
 
-      // Debug: log full server response so we can see if photo URLs are returned
+      // Log response to see if image URL is returned
       console.log("📤 [CreateRequest] POST /api/BuyerRequest response:", response)
       console.log("📤 [CreateRequest] response.data:", response.data)
+      console.log("📤 [CreateRequest] imageUrl from response:", response.data?.imageUrl || response.data?.data?.imageUrl)
 
       toast({
         title: "Request created",

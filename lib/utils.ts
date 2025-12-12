@@ -16,18 +16,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Constructs a valid avatar URL from various sources
+ * Constructs a valid avatar URL from backend API
  * Handles relative URLs, absolute URLs, and data URLs
  */
 export function getAvatarUrl(avatarUrl?: string | null): string | undefined {
   if (!avatarUrl || !avatarUrl.trim()) {
-    // Check localStorage for user profile image (data URL)
-    if (typeof window !== "undefined") {
-      const localImage = localStorage.getItem("userProfileImage")
-      if (localImage && localImage.trim()) {
-        return localImage.trim()
-      }
-    }
     return undefined
   }
 

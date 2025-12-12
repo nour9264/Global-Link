@@ -29,6 +29,7 @@ interface AuthContextType extends AuthState {
   forgotPassword: (request: ForgotPasswordRequest) => Promise<ForgotPasswordResponse>
   resetPassword: (request: ResetPasswordRequest) => Promise<ResetPasswordResponse>
   checkTokenExpiration: () => boolean
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -365,13 +366,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       console.log("Reset Password API Response:", response.data)
-      
+
       // Return the response even if isSuccess is false - let the UI handle it
       // Some APIs might return success without isSuccess flag
       if (response.data.isSuccess === false) {
         throw new Error(response.data.message || "Failed to reset password")
       }
-      
+
       return response.data
     } catch (error) {
       const apiError = error as ApiError
@@ -384,6 +385,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(apiError.message || "Failed to reset password")
     }
   }, [])
+
+  // Refresh user data from backend
+  const refreshUser = useCallback(async (): Promise<void> => {
+    try {
+      // Fetch latest profile data from backend
+      const response = await apiClient.get('/api/Auth/profile')
+
+      if (response.data) {
+        const profileData = response.data
+
+        // Update user object with latest data
+        const updatedUser: User = {
+          ...user!,
+          firstName: profileData.firstName || profileData.FirstName || user?.firstName,
+          lastName: profileData.lastName || profileData.LastName || user?.lastName,
+          email: profileData.email || profileData.Email || user?.email,
+          avatarUrl: profileData.avatarUrl || profileData.AvatarUrl || profileData.profilePhotoUrl,
+        }
+
+        // Update state
+        setUser(updatedUser)
+
+        // Update localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('authUser', JSON.stringify(updatedUser))
+        }
+
+        console.log('[AuthContext] User refreshed successfully:', updatedUser)
+      }
+    } catch (error) {
+      console.error('[AuthContext] Failed to refresh user:', error)
+    }
+  }, [user])
 
   const value: AuthContextType = {
     user,
@@ -398,6 +432,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     forgotPassword,
     resetPassword,
     checkTokenExpiration,
+    refreshUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

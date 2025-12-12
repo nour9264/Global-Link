@@ -104,8 +104,10 @@ export interface TravelerSummary {
   id?: string
   $id?: string
   name?: string
+  travelerFullName?: string  // API returns this field name
   rating?: number
   avatarUrl?: string
+  travelerAvatarUrl?: string  // API returns this field name
   languages?: string[]
   totalReviews?: number
   completedTrips?: number

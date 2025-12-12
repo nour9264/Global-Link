@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MapPin, Calendar, Loader2 } from "lucide-react"
 import { getAvailableTrips, makeOffer } from "@/lib/trip-service"
 import { getMyRequests } from "@/lib/buyer-request-service"
+import { getAvatarUrl } from "@/lib/utils"
 import type { AvailableTrip, TravelerSummary } from "@/types/trip"
 import type { BuyerRequest } from "@/types/buyer-request"
 import { useToast } from "@/hooks/use-toast"
@@ -403,12 +404,11 @@ export default function BuyerFindTravelersPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-foreground">
-              Matching Travelers ({loading ? "…" : travelers.length})
+              Available Trips ({loading ? "…" : filteredTrips.length})
             </h2>
             {!loading && (
               <p className="text-sm text-muted-foreground">
-                Showing {filteredTrips.length} trip{filteredTrips.length === 1 ? "" : "s"} from{" "}
-                {travelers.length} traveler{travelers.length === 1 ? "" : "s"}.
+                Showing {filteredTrips.length} trip{filteredTrips.length === 1 ? "" : "s"}.
               </p>
             )}
           </div>
@@ -417,14 +417,15 @@ export default function BuyerFindTravelersPage() {
             <div className="flex justify-center py-16">
               <Loader2 className="w-8 h-8 text-[#0088cc] animate-spin" />
             </div>
-          ) : travelers.length === 0 ? (
+          ) : filteredTrips.length === 0 ? (
             <Card className="p-12 text-center text-muted-foreground">
-              <p className="text-lg font-medium text-foreground mb-2">No travelers found</p>
+              <p className="text-lg font-medium text-foreground mb-2">No trips found</p>
               <p>Try adjusting your filters or check back later for new trips.</p>
             </Card>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-              {travelers.map(({ traveler, trips }) => {
+              {filteredTrips.map((trip) => {
+                const traveler = trip.traveler || {}
                 const initials =
                   traveler.name
                     ?.split(" ")
@@ -434,15 +435,24 @@ export default function BuyerFindTravelersPage() {
                     .toUpperCase() || "TR"
                 const languagesText = traveler.languages?.join(", ")
 
+                console.log('👤 [Find Travelers Card] Rendering traveler:', {
+                  id: traveler.id,
+                  name: traveler.name,
+                  travelerFullName: traveler.travelerFullName,
+                  avatarUrl: traveler.avatarUrl,
+                  travelerAvatarUrl: traveler.travelerAvatarUrl,
+                  fullTravelerObject: traveler
+                })
+
                 return (
                   <Card key={`${traveler.id || initials}`} className="p-3 sm:p-4 md:p-6 flex flex-col">
                     <div className="flex flex-col items-center text-center mb-4">
                       <Avatar className="w-20 h-20 mb-3">
-                        <AvatarImage src={traveler.avatarUrl || "/placeholder.svg"} />
+                        <AvatarImage src={traveler.travelerAvatarUrl || traveler.avatarUrl || "/placeholder.svg"} />
                         <AvatarFallback>{initials}</AvatarFallback>
                       </Avatar>
                       <h3 className="font-semibold text-foreground mb-1">
-                        {traveler.name || "Traveler"}
+                        {traveler.travelerFullName || traveler.name || "Traveler"}
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center">
                         {traveler.rating && (
@@ -460,50 +470,43 @@ export default function BuyerFindTravelersPage() {
                     </div>
 
                     <div className="space-y-3 mb-4 flex-1">
-                      <p className="text-sm font-medium text-foreground">Upcoming Trips:</p>
-                      {trips.map((trip) => (
-                        <div key={trip.id} className="space-y-1 rounded-md border p-3 bg-muted">
-                          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                            <MapPin className="w-4 h-4 text-[#0088cc] mt-0.5 flex-shrink-0" />
-                            <p>
-                              {trip.fromCity || trip.fromCountry || "Unknown"} →{" "}
-                              {trip.toCity || trip.toCountry || "Unknown"}
-                            </p>
-                          </div>
-                          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                            <Calendar className="w-4 h-4 text-[#0088cc] mt-0.5 flex-shrink-0" />
-                            <p>
-                              {formatDateRange(trip.departureDate, trip.returnDate)}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                            {trip.availableCapacityKg !== undefined && (
-                              <span className="px-2 py-1 bg-muted border rounded-full">
-                                {trip.availableCapacityKg} kg capacity
-                              </span>
-                            )}
-                            {trip.maxPackageWeightKg !== undefined && (
-                              <span className="px-2 py-1 bg-muted border rounded-full">
-                                Max {trip.maxPackageWeightKg} kg/package
-                              </span>
-                            )}
-                            {trip.compensationMin !== undefined && trip.compensationMax !== undefined && (
-                              <span className="px-2 py-1 bg-muted border rounded-full">
-                                Pays ${trip.compensationMin} - ${trip.compensationMax}
-                              </span>
-                            )}
-                            {trip.status && (
-                              <span className="px-2 py-1 bg-muted border rounded-full capitalize">
-                                {trip.status.toLowerCase()}
-                              </span>
-                            )}
-                          </div>
+                      <p className="text-sm font-medium text-foreground">Trip Details:</p>
+                      <div className="space-y-1 rounded-md border p-3 bg-muted">
+                        <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4 text-[#0088cc] mt-0.5 flex-shrink-0" />
+                          <p>
+                            {trip.fromCity || trip.fromCountry || "Unknown"} →{" "}
+                            {trip.toCity || trip.toCountry || "Unknown"}
+                          </p>
                         </div>
-                      ))}
+                        <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Calendar className="w-4 h-4 text-[#0088cc] mt-0.5 flex-shrink-0" />
+                          <p>
+                            {formatDateRange(trip.departureDate, trip.returnDate)}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                          {trip.availableCapacityKg !== undefined && (
+                            <span className="px-2 py-1 bg-muted border rounded-full">
+                              {trip.availableCapacityKg} kg capacity
+                            </span>
+                          )}
+                          {trip.maxPackageWeightKg !== undefined && (
+                            <span className="px-2 py-1 bg-muted border rounded-full">
+                              Max {trip.maxPackageWeightKg} kg/package
+                            </span>
+                          )}
+                          {trip.status && (
+                            <span className="px-2 py-1 bg-muted border rounded-full capitalize">
+                              {trip.status.toLowerCase()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Button onClick={() => openOfferDialog(trips[0]?.id || '')} className="w-full bg-[#0088cc] hover:bg-[#0077b3] text-white" size="sm">
+                      <Button onClick={() => openOfferDialog(trip.id)} className="w-full bg-[#0088cc] hover:bg-[#0077b3] text-white" size="sm">
                         Make Offer
                       </Button>
                     </div>

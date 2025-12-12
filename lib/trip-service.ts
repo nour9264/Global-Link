@@ -604,10 +604,14 @@ export async function getAvailableTrips(params?: {
 
     const mapTraveler = (traveler: any): TravelerSummary | undefined => {
       if (!traveler) return undefined
-      return {
+
+      console.log('🔍 [mapTraveler] Input traveler object:', traveler)
+
+      const mapped = {
         id: traveler.id || traveler.$id || traveler.userId,
         $id: traveler.$id,
         name: traveler.name || traveler.fullName || traveler.displayName || "",
+        travelerFullName: traveler.travelerFullName,
         rating:
           traveler.rating !== undefined
             ? Number(traveler.rating)
@@ -615,6 +619,7 @@ export async function getAvailableTrips(params?: {
               ? Number(traveler.averageRating)
               : undefined,
         avatarUrl: traveler.avatarUrl || traveler.profilePhotoUrl || traveler.photoUrl,
+        travelerAvatarUrl: traveler.travelerAvatarUrl,
         languages:
           traveler.languages && Array.isArray(traveler.languages.$values)
             ? traveler.languages.$values
@@ -625,6 +630,11 @@ export async function getAvailableTrips(params?: {
           traveler.completedTrips !== undefined ? traveler.completedTrips : traveler.completedTripCount,
         bio: traveler.bio || traveler.description,
       }
+
+      console.log('✅ [mapTraveler] Mapped traveler object:', mapped)
+      console.log('🖼️ [mapTraveler] Avatar URLs - travelerAvatarUrl:', mapped.travelerAvatarUrl, 'avatarUrl:', mapped.avatarUrl)
+
+      return mapped
     }
 
     const fallbackId = () => Math.random().toString(36).substring(2, 11)
@@ -648,7 +658,20 @@ export async function getAvailableTrips(params?: {
       compensationMax:
         trip.compensationMax !== undefined ? trip.compensationMax : trip.CompensationMax,
       notes: trip.notes || trip.Notes || "",
-      traveler: mapTraveler(trip.traveler || trip.Traveler || trip.user || trip.User),
+      traveler: trip.traveler || trip.Traveler
+        ? mapTraveler(trip.traveler || trip.Traveler || trip.user || trip.User)
+        : {
+          // If no nested traveler object, pull fields directly from trip level
+          id: trip.travelerId || trip.userId,
+          name: trip.travelerName || trip.userName,
+          travelerFullName: trip.travelerFullName,
+          rating: trip.travelerRating,
+          avatarUrl: trip.travelerAvatarUrl,
+          travelerAvatarUrl: trip.travelerAvatarUrl,
+          languages: trip.travelerLanguages,
+          totalReviews: trip.travelerTotalReviews,
+          completedTrips: trip.travelerCompletedTrips,
+        }
     })
 
     if (Array.isArray(data)) {

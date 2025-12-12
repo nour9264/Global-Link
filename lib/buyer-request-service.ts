@@ -567,15 +567,42 @@ function mapRequestData(data: any): BuyerRequest {
     createdAt: data.createdAt || data.CreatedAt || data.createdAtUtc || data.CreatedAtUtc,
     updatedAt: data.updatedAt || data.UpdatedAt || data.updatedAtUtc || data.UpdatedAtUtc,
     photos: ((): string[] => {
-      const raw = data.photos || data.Photos || data.photoUrls || data.PhotoUrls || []
-      if (!Array.isArray(raw)) return []
-      return raw
-        .map((p: any) => {
-          const normalized = ensureAbsoluteUrl(p)
-          // If normalization failed, still return string value if present
-          return normalized ?? (typeof p === "string" ? p : String(p))
+      const photosArray: string[] = []
+
+      // Case 1: imageUrl (singular) from backend - primary image field
+      const imageUrl = data.imageUrl || data.ImageUrl
+      if (imageUrl) {
+        photosArray.push(imageUrl)
+      }
+
+      // Case 2: photos array of objects with fileUrl property
+      const photosData = data.photos || data.Photos
+      if (Array.isArray(photosData) && photosData.length > 0) {
+        photosData.forEach((photo: any) => {
+          // Handle both object format {fileUrl: "..."} and string format
+          const url = photo?.fileUrl || photo?.FileUrl || photo?.url || (typeof photo === "string" ? photo : null)
+          if (url && typeof url === "string") {
+            photosArray.push(url)
+          }
         })
-        .filter(Boolean)
+      }
+
+      // Case 3: photoUrls array of strings (legacy support)
+      const photoUrls = data.photoUrls || data.PhotoUrls
+      if (Array.isArray(photoUrls) && photoUrls.length > 0) {
+        photoUrls.forEach((url: any) => {
+          if (url && typeof url === "string") {
+            photosArray.push(url)
+          }
+        })
+      }
+
+      // Normalize all URLs to absolute and remove duplicates
+      return Array.from(new Set(
+        photosArray
+          .map(p => ensureAbsoluteUrl(p))
+          .filter(Boolean) as string[]
+      ))
     })(),
   }
 }
