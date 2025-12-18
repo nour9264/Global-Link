@@ -189,6 +189,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ...(request.phoneNumber && { phoneNumber: request.phoneNumber }),
       }
 
+      console.log("🔍 [DEBUG] Buyer Registration Request Body:", requestBody)
+      console.log("🔍 [DEBUG] OTP Value:", request.otp)
+
       // Note: profileImage is not included as the API expects JSON (application/json), not multipart/form-data
       // Profile image can be uploaded separately after registration if needed
 
@@ -278,6 +281,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       if (request.extractedData) {
         formData.append("ExtractedData", request.extractedData)
+      }
+
+      console.log("🔍 [DEBUG] Traveler Registration FormData OTP:", request.otp)
+      // Log FormData entries
+      console.log("🔍 [DEBUG] Traveler FormData Entries:")
+      for (const [key, value] of formData.entries()) {
+        console.log(`  ${key}:`, typeof value === 'string' ? value : value.constructor.name)
       }
 
       // Send as multipart/form-data (don't set Content-Type header, browser will set it with boundary)

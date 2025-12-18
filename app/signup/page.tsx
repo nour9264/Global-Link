@@ -66,10 +66,17 @@ function SignUpContent() {
     }
 
     try {
+      console.log("🔍 [SIGNUP] Sending OTP to email:", email)
       const response = await sendOTP({ email })
       setOtpSent(true)
       setOtpExpiresAt(response.expiresAt)
       setStep("otp")
+      
+      const sentTime = new Date().toISOString()
+      console.log("🔍 [SIGNUP] OTP sent at:", sentTime)
+      console.log("🔍 [SIGNUP] OTP expires at:", response.expiresAt)
+      console.log("🔍 [SIGNUP] Email used for OTP:", email)
+      
       toast.success("OTP sent to your email!")
       if (response.otp) {
         // For development/testing - show OTP in console
@@ -98,8 +105,10 @@ function SignUpContent() {
       return
     }
 
+    // Note: OTP will be validated by the backend during registration
+    // Just proceed to the details step
+    console.log("🔍 [SIGNUP] Moving to details step with OTP:", otp)
     setStep("details")
-    toast.success("OTP verified!")
   }
 
   // Step 3: Complete registration
@@ -170,6 +179,10 @@ function SignUpContent() {
           otp,
         }
 
+        console.log("🔍 [SIGNUP] OTP State Value:", otp)
+        console.log("🔍 [SIGNUP] Registration Data:", registrationData)
+        console.log("🔍 [SIGNUP] OTP in Registration Data:", registrationData.otp)
+
         await registerBuyer(registrationData)
 
         // If profile image was uploaded, store it temporarily until we can upload it separately
@@ -201,6 +214,10 @@ function SignUpContent() {
           passportImage: passportImage || undefined, // Optional for traveler
           otp,
         }
+
+        console.log("🔍 [SIGNUP] Traveler OTP State Value:", otp)
+        console.log("🔍 [SIGNUP] Traveler Registration Data:", registrationData)
+        console.log("🔍 [SIGNUP] OTP in Registration Data:", registrationData.otp)
 
         await registerTraveler(registrationData)
 
@@ -297,13 +314,13 @@ function SignUpContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-8">
           {/* Progress indicator */}
           <div className="mb-6">
             <Progress value={getProgressValue()} className="h-2" />
-            <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <div className="flex justify-between mt-2 text-xs text-muted-foreground">
               <span className={step === "email" ? "font-semibold text-[#0088cc]" : ""}>Email</span>
               <span className={step === "otp" ? "font-semibold text-[#0088cc]" : ""}>OTP</span>
               <span className={step === "details" ? "font-semibold text-[#0088cc]" : ""}>Details</span>
@@ -325,14 +342,14 @@ function SignUpContent() {
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Create Your GlobalLink Account</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Create Your GlobalLink Account</h1>
+            <p className="text-sm text-muted-foreground">
               {step === "email" && "Start by verifying your email address"}
               {step === "otp" && "Enter the OTP sent to your email"}
               {step === "details" && "Complete your profile information"}
             </p>
             {role && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Registering as: <span className="font-semibold capitalize">{role}</span>
               </p>
             )}
@@ -394,7 +411,11 @@ function SignUpContent() {
                   type="text"
                   placeholder="123456"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  onChange={(e) => {
+                    const newOtp = e.target.value.replace(/\D/g, "").slice(0, 6)
+                    console.log("🔍 [SIGNUP] OTP Input Changed:", newOtp)
+                    setOtp(newOtp)
+                  }}
                   maxLength={6}
                   disabled={isSubmitting || isLoading}
                   required
@@ -433,7 +454,7 @@ function SignUpContent() {
 
               {/* Personal Information */}
               <div className="space-y-4">
-                <h2 className="text-base font-semibold text-gray-900">Personal Information</h2>
+                <h2 className="text-base font-semibold text-foreground">Personal Information</h2>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -514,7 +535,7 @@ function SignUpContent() {
 
               {/* Security Credentials */}
               <div className="space-y-4">
-                <h2 className="text-base font-semibold text-gray-900">Security Credentials</h2>
+                <h2 className="text-base font-semibold text-foreground">Security Credentials</h2>
 
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
@@ -547,7 +568,7 @@ function SignUpContent() {
 
               {/* Profile Picture / User Photo */}
               <div className="space-y-4">
-                <h2 className="text-base font-semibold text-gray-900">
+                <h2 className="text-base font-semibold text-foreground">
                   {role === "traveler" ? "User Photo" : "Profile Picture"} {role === "traveler" ? <span className="text-red-500">*</span> : "(Optional)"}
                 </h2>
 
@@ -555,14 +576,14 @@ function SignUpContent() {
                   <div className="flex items-center gap-4">
                     <Avatar className="w-16 h-16">
                       <AvatarImage src={profileImagePreview || undefined} />
-                      <AvatarFallback className="bg-gray-100">
-                        <Upload className="w-6 h-6 text-gray-400" />
+                      <AvatarFallback className="bg-muted">
+                        <Upload className="w-6 h-6 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <label
                         htmlFor="profilePicture"
-                        className="text-sm text-gray-600 cursor-pointer hover:text-gray-900"
+                        className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
                       >
                         Upload JPG, PNG, or GIF (Max 5MB)
                       </label>
@@ -584,7 +605,7 @@ function SignUpContent() {
               {/* Traveler-specific documents */}
               {role === "traveler" && (
                 <div className="space-y-4">
-                  <h2 className="text-base font-semibold text-gray-900">Identity Documents</h2>
+                  <h2 className="text-base font-semibold text-foreground">Identity Documents</h2>
 
                   {/* Identity Card Image */}
                   <div className="space-y-2">
@@ -601,14 +622,14 @@ function SignUpContent() {
                           />
                         </div>
                       ) : (
-                        <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-                          <Upload className="w-8 h-8 text-gray-400" />
+                        <div className="w-24 h-24 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted">
+                          <Upload className="w-8 h-8 text-muted-foreground" />
                         </div>
                       )}
                       <div className="flex-1">
                         <label
                           htmlFor="identityCardImage"
-                          className="text-sm text-gray-600 cursor-pointer hover:text-gray-900"
+                          className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
                         >
                           Upload Identity Card (JPG, PNG, or GIF - Max 5MB)
                         </label>
@@ -640,14 +661,14 @@ function SignUpContent() {
                           />
                         </div>
                       ) : (
-                        <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-                          <Upload className="w-8 h-8 text-gray-400" />
+                        <div className="w-24 h-24 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted">
+                          <Upload className="w-8 h-8 text-muted-foreground" />
                         </div>
                       )}
                       <div className="flex-1">
                         <label
                           htmlFor="passportImage"
-                          className="text-sm text-gray-600 cursor-pointer hover:text-gray-900"
+                          className="text-sm text-muted-foreground cursor-pointer hover:text-foreground"
                         >
                           Upload Passport (JPG, PNG, or GIF - Max 5MB)
                         </label>
@@ -692,9 +713,9 @@ function SignUpContent() {
 export default function SignUpPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-8">
             <div className="flex items-center justify-center">
               <Loader2 className="w-8 h-8 animate-spin text-[#0088cc]" />
             </div>
