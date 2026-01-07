@@ -8,5 +8,5 @@
  */
 
 // Single source of truth for the backend base URL used by api-client
-export const API_BASE_URL = "https://unceriferous-eda-nonseasonally.ngrok-free.dev"
+export const API_BASE_URL = "https://globallink.runasp.net"
 
