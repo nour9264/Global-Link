@@ -16,6 +16,7 @@ const nextConfig = {
     // add its hostname here or use `remotePatterns` for more flexible matching.
     domains: [
       "unceriferous-eda-nonseasonally.ngrok-free.dev",
+      "globallink.runasp.net",
     ],
   },
   // Disable source maps in production to reduce bundle size

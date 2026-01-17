@@ -522,16 +522,16 @@ export default function BuyerOffersPage() {
                               <DialogTitle>Respond to Offer</DialogTitle>
                             </DialogHeader>
                             {respondLoading ? (
-                              <div className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Loading details...</div>
+                              <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin" /> Loading details...</div>
                             ) : respondOffer ? (
-                              <div className="space-y-2">
-                                <div><b>Offer Amount:</b> ${respondOffer.price}</div>
-                                <div><b>Message:</b> {respondOffer.message}</div>
-                                <div><b>Status:</b> {respondOffer.status}</div>
-                                <div><b>Offer Date:</b> {respondOffer.createdAt ? new Date(respondOffer.createdAt).toLocaleString() : "-"}</div>
+                              <div className="space-y-2 text-sm">
+                                <div><b className="text-foreground">Offer Amount:</b> <span className="text-muted-foreground">${respondOffer.price}</span></div>
+                                <div><b className="text-foreground">Message:</b> <span className="text-muted-foreground">{respondOffer.message}</span></div>
+                                <div><b className="text-foreground">Status:</b> <span className="text-muted-foreground">{respondOffer.status}</span></div>
+                                <div><b className="text-foreground">Offer Date:</b> <span className="text-muted-foreground">{respondOffer.createdAt ? new Date(respondOffer.createdAt).toLocaleString() : "-"}</span></div>
                                 {respondTrip && (
-                                  <div className="mt-2 p-2 border rounded bg-blue-50">
-                                    <b>Trip Details:</b><br />
+                                  <div className="mt-2 p-2 border border-border rounded bg-muted text-muted-foreground">
+                                    <b className="text-foreground">Trip Details:</b><br />
                                     {respondTrip.fromCity} → {respondTrip.toCity} ({respondTrip.fromCountry} → {respondTrip.toCountry})<br />
                                     Departure: {respondTrip.departureDate}<br />
                                     Return: {respondTrip.returnDate}<br />
@@ -539,25 +539,25 @@ export default function BuyerOffersPage() {
                                   </div>
                                 )}
                                 {respondRequest && (
-                                  <div className="mt-2 p-3 border rounded bg-green-50">
-                                    <b>Item/Request Details:</b><br />
+                                  <div className="mt-2 p-3 border border-border rounded bg-muted text-muted-foreground">
+                                    <b className="text-foreground">Item/Request Details:</b><br />
                                     <div className="mt-2 space-y-1">
-                                      <div><b>Title:</b> {respondRequest.title}</div>
-                                      {respondRequest.category && <div><b>Category:</b> {respondRequest.category}</div>}
-                                      <div><b>Route:</b> {respondRequest.fromCity}, {respondRequest.fromCountry} → {respondRequest.toCity}, {respondRequest.toCountry}</div>
-                                      {respondRequest.description && <div><b>Description:</b> {respondRequest.description}</div>}
+                                      <div><b className="text-foreground">Title:</b> {respondRequest.title}</div>
+                                      {respondRequest.category && <div><b className="text-foreground">Category:</b> {respondRequest.category}</div>}
+                                      <div><b className="text-foreground">Route:</b> {respondRequest.fromCity}, {respondRequest.fromCountry} → {respondRequest.toCity}, {respondRequest.toCountry}</div>
+                                      {respondRequest.description && <div><b className="text-foreground">Description:</b> {respondRequest.description}</div>}
 
                                       {(respondRequest.estimatedTotalWeightKg || respondRequest.totalPackages) && (
-                                        <div className="mt-2 pt-2 border-t border-green-200">
-                                          <b>Package Information:</b><br />
+                                        <div className="mt-2 pt-2 border-t border-border">
+                                          <b className="text-foreground">Package Information:</b><br />
                                           {respondRequest.estimatedTotalWeightKg && <div>• Weight: {respondRequest.estimatedTotalWeightKg} kg</div>}
                                           {respondRequest.totalPackages && <div>• Packages: {respondRequest.totalPackages}</div>}
                                         </div>
                                       )}
 
                                       {(respondRequest.itemValue || respondRequest.budgetMax || respondRequest.urgency || respondRequest.targetArrivalDate) && (
-                                        <div className="mt-2 pt-2 border-t border-green-200">
-                                          <b>Additional Details:</b><br />
+                                        <div className="mt-2 pt-2 border-t border-border">
+                                          <b className="text-foreground">Additional Details:</b><br />
                                           {respondRequest.itemValue && <div>• Item Value: ${respondRequest.itemValue}</div>}
                                           {respondRequest.budgetMax && <div>• Max Budget: ${respondRequest.budgetMax}</div>}
                                           {respondRequest.urgency && <div>• Urgency: {respondRequest.urgency}</div>}
@@ -566,8 +566,8 @@ export default function BuyerOffersPage() {
                                       )}
 
                                       {(respondRequest.isFragile || respondRequest.batteryType) && (
-                                        <div className="mt-2 pt-2 border-t border-green-200">
-                                          <b>Special Handling:</b><br />
+                                        <div className="mt-2 pt-2 border-t border-border">
+                                          <b className="text-foreground">Special Handling:</b><br />
                                           {respondRequest.isFragile && <div>• ⚠️ Fragile Item</div>}
                                           {respondRequest.batteryType && <div>• 🔋 Battery Type: {respondRequest.batteryType}</div>}
                                         </div>

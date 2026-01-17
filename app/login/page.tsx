@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import { ThemeLogo } from "@/components/theme-logo"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -18,6 +20,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -44,7 +47,7 @@ export default function LoginPage() {
     try {
       await login({ email, password })
       toast.success("Login successful!")
-      
+
       // Get updated user from context after login
       // The redirect will happen via useEffect above
       // But we need to wait a moment for state to update
@@ -70,6 +73,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#0088cc]/10 to-[#0077b3]/10 dark:from-gray-900 dark:to-gray-950">
+      {/* Theme Toggle - Top Left */}
+      <div className="fixed top-4 left-4 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Login card */}
       <div className="relative w-full max-w-md">
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-2xl dark:shadow-cyan-500/10 p-8 border border-transparent dark:border-gray-800">
@@ -100,15 +108,30 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="dark:text-gray-300">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting || isLoading}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting || isLoading}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {error && (

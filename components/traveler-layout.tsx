@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import "@/styles/dashboard-scroller.css"
 
 interface TravelerLayoutProps {
   children: ReactNode
@@ -276,7 +277,7 @@ export function TravelerLayout({ children }: TravelerLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-black">{children}</main>
+        <main className="dashboard-main flex-1 overflow-y-auto bg-gray-50 dark:bg-black">{children}</main>
 
         {/* Footer */}
         <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 px-4 sm:px-6 py-4">

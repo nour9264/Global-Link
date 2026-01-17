@@ -11,13 +11,14 @@ import { ArrowLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import { ThemeLogo } from "@/components/theme-logo"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type ForgotPasswordStep = "email" | "otp" | "reset"
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
   const { forgotPassword, resetPassword, isLoading } = useAuth()
-  
+
   const [step, setStep] = useState<ForgotPasswordStep>("email")
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
@@ -25,7 +26,7 @@ export default function ForgotPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [otpSent, setOtpSent] = useState(false)
   const [otpExpiresAt, setOtpExpiresAt] = useState<string | null>(null)
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -121,17 +122,17 @@ export default function ForgotPasswordPage() {
         newPassword,
         confirmPassword,
       })
-      
+
       console.log("Reset password result:", result)
-      
+
       // If we get here, password reset was successful (no error thrown)
       toast.success("Password reset successfully! Please login with your new password.")
-      
+
       // Clear form state
       setNewPassword("")
       setConfirmPassword("")
       setIsSubmitting(false)
-      
+
       // Immediately redirect to login (like registration does)
       // Use a small delay to ensure toast shows, then redirect
       setTimeout(() => {
@@ -164,34 +165,27 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 py-12">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/images/login-background.jpg')",
-          filter: "blur(4px)",
-        }}
-      />
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/10" />
+    <div className="min-h-screen relative flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[#0088cc]/10 to-[#0077b3]/10 dark:from-gray-900 dark:to-gray-950">
+      {/* Theme Toggle - Top Left */}
+      <div className="fixed top-4 left-4 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* Forgot Password card */}
       <div className="relative w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-2xl dark:shadow-cyan-500/10 p-8 border border-transparent dark:border-gray-800">
           <div className="flex justify-center mb-6">
             <ThemeLogo width={180} height={80} className="h-20 w-auto" />
           </div>
 
           {/* Header */}
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-foreground mb-2">
               {step === "email" && "Forgot Password"}
               {step === "otp" && "Verify OTP"}
               {step === "reset" && "Reset Password"}
             </h1>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {step === "email" && "Enter your email address to receive a password reset code"}
               {step === "otp" && "Enter the OTP sent to your email"}
               {step === "reset" && "Enter your new password"}
@@ -224,9 +218,9 @@ export default function ForgotPasswordPage() {
                 {isSubmitting ? "Sending OTP..." : "Send Reset Code"}
               </Button>
 
-              <div className="text-center text-sm text-gray-600">
+              <div className="text-center text-sm text-muted-foreground">
                 Remember your password?{" "}
-                <Link href="/login" className="text-[#0088cc] hover:underline font-medium">
+                <Link href="/login" className="text-[#0088cc] dark:text-cyan-400 hover:underline font-medium">
                   Log in
                 </Link>
               </div>
@@ -261,7 +255,7 @@ export default function ForgotPasswordPage() {
                   className="text-center text-2xl tracking-widest"
                 />
                 {errors.otp && <p className="text-sm text-red-600">{errors.otp}</p>}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Enter the 6-digit code sent to <strong>{email}</strong>
                 </p>
               </div>
@@ -320,7 +314,7 @@ export default function ForgotPasswordPage() {
               </div>
 
               {errors.submit && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded text-sm">
                   {errors.submit}
                 </div>
               )}

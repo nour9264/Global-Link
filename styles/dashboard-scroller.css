@@ -1,0 +1,55 @@
+/* Dashboard Scroller Styles - Matching Landing Page */
+
+/* Smooth scrolling behavior */
+.dashboard-main {
+    scroll-behavior: smooth;
+    scroll-padding-top: 0;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    will-change: scroll-position;
+}
+
+/* Custom scrollbar styling for light mode */
+.dashboard-main::-webkit-scrollbar {
+    width: 12px;
+}
+
+.dashboard-main::-webkit-scrollbar-track {
+    background: #f4f5f7;
+    border-radius: 10px;
+}
+
+.dashboard-main::-webkit-scrollbar-thumb {
+    background: #0088cc;
+    border-radius: 10px;
+    border: 2px solid #f4f5f7;
+    transition: background 0.3s ease;
+}
+
+.dashboard-main::-webkit-scrollbar-thumb:hover {
+    background: #0077b3;
+}
+
+/* Custom scrollbar for dark mode */
+.dark .dashboard-main::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.dark .dashboard-main::-webkit-scrollbar-thumb {
+    background: #0088cc;
+    border-color: #1a1a1a;
+}
+
+.dark .dashboard-main::-webkit-scrollbar-thumb:hover {
+    background: #00aaff;
+}
+
+/* Firefox scrollbar styling */
+.dashboard-main {
+    scrollbar-width: thin;
+    scrollbar-color: #0088cc #f4f5f7;
+}
+
+.dark .dashboard-main {
+    scrollbar-color: #0088cc #1a1a1a;
+}

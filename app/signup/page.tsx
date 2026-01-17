@@ -7,13 +7,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Upload, ArrowLeft, Loader2 } from "lucide-react"
+import { Upload, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
 import Link from "next/link"
 import { CountrySelector } from "@/components/country-selector"
 import { PhoneInput } from "@/components/phone-input"
 import Image from "next/image"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type SignupStep = "email" | "otp" | "details"
 
@@ -49,6 +50,8 @@ function SignUpContent() {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Step 1: Send OTP
   const handleSendOTP = async (e: React.FormEvent) => {
@@ -71,12 +74,12 @@ function SignUpContent() {
       setOtpSent(true)
       setOtpExpiresAt(response.expiresAt)
       setStep("otp")
-      
+
       const sentTime = new Date().toISOString()
       console.log("🔍 [SIGNUP] OTP sent at:", sentTime)
       console.log("🔍 [SIGNUP] OTP expires at:", response.expiresAt)
       console.log("🔍 [SIGNUP] Email used for OTP:", email)
-      
+
       toast.success("OTP sent to your email!")
       if (response.otp) {
         // For development/testing - show OTP in console
@@ -315,6 +318,11 @@ function SignUpContent() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      {/* Theme Toggle - Top Left */}
+      <div className="fixed top-4 left-4 z-50">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
         <div className="bg-card rounded-lg shadow-sm border border-border p-8">
           {/* Progress indicator */}
@@ -539,29 +547,59 @@ function SignUpContent() {
 
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={isSubmitting || isLoading}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isSubmitting || isLoading}
+                      required
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && <p className="text-sm text-red-600">{errors.password}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Re-enter your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    disabled={isSubmitting || isLoading}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Re-enter your password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={isSubmitting || isLoading}
+                      required
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                   {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword}</p>}
                 </div>
               </div>

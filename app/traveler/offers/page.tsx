@@ -16,6 +16,7 @@ import {
 import { getMyTrips, getOffersByTripId, getMyOffers, getTripById } from "@/lib/trip-service"
 import { getMatchIdByOfferId } from "@/lib/buyer-request-service"
 import { acceptOffer, rejectOffer } from "@/lib/offer-action-service"
+import { getOfferById } from "@/lib/offer-service"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import type { Trip } from "@/types/trip"
 import type { Offer } from "@/types/offer"
@@ -436,16 +437,18 @@ export default function OffersPage() {
                           </Button>
                         ) : (
                           <Button variant="outline" onClick={async () => {
-                            setRespondOffer(offer);
-                            setRespondTrip(null);
-                            setRespondRequest(null);
+                            // Fetch the full offer details with request data
                             setRespondLoading(true);
                             try {
-                              // The offer object from getMyOffers doesn't have requestId/tripId
-                              // So we skip fetching trip and request for now
-                              // In production, the API should return these IDs with the offer
+                              console.log('🔍 [Respond] Fetching full offer details for:', offer.id);
+                              const fullOffer = await getOfferById(offer.id);
+                              console.log('✅ [Respond] Full offer data:', fullOffer);
+                              setRespondOffer(fullOffer);
                             } catch (e) {
-                              console.error("Error loading details:", e);
+                              console.error('❌ [Respond] Error fetching offer details:', e);
+                              toast.error('Failed to load offer details');
+                              // Fallback to the offer we already have
+                              setRespondOffer(offer);
                             } finally {
                               setRespondLoading(false);
                             }
@@ -467,19 +470,33 @@ export default function OffersPage() {
               <DialogTitle>Respond to Offer</DialogTitle>
             </DialogHeader>
             {respondLoading ? (
-              <div className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Loading details...</div>
+              <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin" /> Loading details...</div>
             ) : respondOffer ? (
-              <div className="space-y-2">
-                <div><b>Offer Amount:</b> ${respondOffer.price}</div>
-                <div><b>Message:</b> {respondOffer.message}</div>
-                <div><b>Status:</b> {respondOffer.status}</div>
-                <div><b>Offer Date:</b> {respondOffer.createdAt ? new Date(respondOffer.createdAt).toLocaleString() : "-"}</div>
-                <div className="mt-2 p-2 border rounded bg-blue-50">
-                  <b>Buyer Information:</b><br />
-                  Buyer ID: {respondOffer.buyerId}<br />
-                  Trip ID: {respondOffer.tripId || "N/A"}<br />
-                  Request ID: {respondOffer.requestId || "N/A"}
-                </div>
+              <div className="space-y-2 text-sm">
+                <div><b className="text-foreground">Offer Amount:</b> <span className="text-muted-foreground">${respondOffer.price}</span></div>
+                <div><b className="text-foreground">Message:</b> <span className="text-muted-foreground">{respondOffer.message}</span></div>
+                <div><b className="text-foreground">Status:</b> <span className="text-muted-foreground">{respondOffer.status}</span></div>
+                <div><b className="text-foreground">Offer Date:</b> <span className="text-muted-foreground">{respondOffer.createdAt ? new Date(respondOffer.createdAt).toLocaleString() : "-"}</span></div>
+                {respondOffer.request && (
+                  <div className="mt-2 p-3 border border-border rounded bg-muted text-muted-foreground">
+                    <b className="text-foreground">Item/Request Details:</b><br />
+                    <div className="mt-2 space-y-1">
+                      {respondOffer.request.title && <div><b className="text-foreground">Title:</b> {respondOffer.request.title}</div>}
+                      {respondOffer.request.category && <div><b className="text-foreground">Category:</b> {respondOffer.request.category}</div>}
+                      {respondOffer.request.fromCity && <div><b className="text-foreground">Route:</b> {respondOffer.request.fromCity}, {respondOffer.request.fromCountry} → {respondOffer.request.toCity}, {respondOffer.request.toCountry}</div>}
+                      {respondOffer.request.description && <div><b className="text-foreground">Description:</b> {respondOffer.request.description}</div>}
+
+                      {(respondOffer.request.itemValue !== undefined || respondOffer.request.estimatedTotalWeightKg !== undefined || respondOffer.request.targetArrivalDate) && (
+                        <div className="mt-2 pt-2 border-t border-border">
+                          <b className="text-foreground">Additional Details:</b><br />
+                          {respondOffer.request.itemValue !== undefined && <div>• Item Value: ${respondOffer.request.itemValue}</div>}
+                          {respondOffer.request.estimatedTotalWeightKg !== undefined && <div>• Weight: {respondOffer.request.estimatedTotalWeightKg} kg</div>}
+                          {respondOffer.request.targetArrivalDate && <div>• Target Arrival: {new Date(respondOffer.request.targetArrivalDate as any).toLocaleDateString()}</div>}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : null}
             <DialogFooter>

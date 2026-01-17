@@ -65,14 +65,16 @@ export default function LandingPage() {
     return (
         <div className={`App ${darkMode ? 'dark' : 'light'}`} data-theme={darkMode ? 'dark' : 'light'}>
             <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-            <Hero darkMode={darkMode} />
-            <HowItWorks darkMode={darkMode} />
-            <UseCases darkMode={darkMode} />
-            <Comparison darkMode={darkMode} />
-            <PlatformFeatures darkMode={darkMode} />
-            <Testimonials darkMode={darkMode} />
-            <FAQ darkMode={darkMode} />
-            <Footer darkMode={darkMode} />
+            <div className="app-content">
+                <Hero darkMode={darkMode} />
+                <HowItWorks darkMode={darkMode} />
+                <UseCases darkMode={darkMode} />
+                <Comparison darkMode={darkMode} />
+                <PlatformFeatures darkMode={darkMode} />
+                <Testimonials darkMode={darkMode} />
+                <FAQ darkMode={darkMode} />
+                <Footer darkMode={darkMode} />
+            </div>
         </div>
     )
 }

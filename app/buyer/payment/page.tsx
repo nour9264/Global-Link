@@ -12,8 +12,10 @@ import { getMyRequests, getOffersByRequestId, getMatchIdByOfferId } from "@/lib/
 import { addCard, type AddCardRequest, getCards, setDefaultCard, deleteCard, processPayment, type Card } from "@/lib/payment-service"
 import { BuyerRequest } from "@/types/buyer-request"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export default function BuyerPaymentPage() {
+  const router = useRouter()
   const [isAddingCard, setIsAddingCard] = useState(false)
   const [showCardsManager, setShowCardsManager] = useState(false)
   const [acceptedRequests, setAcceptedRequests] = useState<BuyerRequest[]>([])
@@ -271,9 +273,9 @@ export default function BuyerPaymentPage() {
 
       if (result.success) {
         toast.success(
-          `Payment has been successfully made! You can now proceed to chat with your traveler. A confirmation email has been sent to your email address.`,
+          `Payment has been successfully made! Redirecting to order status...`,
           {
-            duration: 6000,
+            duration: 3000,
             style: {
               background: '#10b981',
               color: 'white',
@@ -281,8 +283,10 @@ export default function BuyerPaymentPage() {
             },
           }
         )
-        // You can redirect or show success state here
-        // router.push("/buyer/escrow") or similar
+        // Redirect to order status page after successful payment
+        setTimeout(() => {
+          router.push(`/buyer/order-status?matchId=${matchId}`)
+        }, 1500)
       } else {
         toast.error(result.message || "Payment failed")
       }
@@ -778,17 +782,17 @@ export default function BuyerPaymentPage() {
 
         {/* Understanding Escrow */}
         <UICard className="p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Understanding Escrow</h2>
-          <p className="text-sm text-gray-600 mb-6">How GlobalLink secures your transaction.</p>
+          <h2 className="text-xl font-bold text-foreground mb-2">Understanding Escrow</h2>
+          <p className="text-sm text-muted-foreground mb-6">How GlobalLink secures your transaction.</p>
 
           <div className="space-y-4">
             <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-5 h-5 text-[#0088cc]" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Funds Held Safely</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground mb-1">Funds Held Safely</h3>
+                <p className="text-sm text-muted-foreground">
                   Your payment is held in a secure escrow account and is only released to the traveler once you confirm
                   successful delivery of your item.
                 </p>
@@ -796,12 +800,12 @@ export default function BuyerPaymentPage() {
             </div>
 
             <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-5 h-5 text-[#0088cc]" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Dispute Resolution</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground mb-1">Dispute Resolution</h3>
+                <p className="text-sm text-muted-foreground">
                   In case of any issues with your delivery, our dispute resolution team will mediate to ensure a fair
                   outcome, protecting both parties.
                 </p>
@@ -809,12 +813,12 @@ export default function BuyerPaymentPage() {
             </div>
 
             <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-5 h-5 text-[#0088cc]" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Peace of Mind</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground mb-1">Peace of Mind</h3>
+                <p className="text-sm text-muted-foreground">
                   GlobalLink's escrow service ensures that both buyers and travelers can transact with confidence,
                   knowing their interests are protected.
                 </p>
