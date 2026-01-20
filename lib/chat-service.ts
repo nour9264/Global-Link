@@ -60,6 +60,7 @@ export interface GetConversationsResponse {
     otherUserId: string
     otherUserName: string
     otherUserAvatar?: string
+    otherUserAvatarUrl?: string
     lastMessage: string
     lastMessageTimestamp: string
     unreadCount: number
@@ -134,12 +135,12 @@ export async function resolveConversation(requestId: string, otherUserId: string
 export async function getConversations(): Promise<ChatConversation[]> {
   try {
     const response = await apiClient.get<GetConversationsResponse>("/api/Chat/conversations")
-    
+
     console.log("📥 [getConversations] Raw API response:", response.data)
-    
+
     // Handle .NET $values wrapper
     const conversations = response.data.$values || response.data
-    
+
     if (!Array.isArray(conversations)) {
       console.warn("⚠️ [getConversations] Expected array but got:", conversations)
       return []
@@ -153,16 +154,17 @@ export async function getConversations(): Promise<ChatConversation[]> {
         id: conv.id,
         lastMessage: conv.lastMessage,
         lastMessageTimestamp: conv.lastMessageTimestamp,
-        otherUserName: conv.otherUserName
+        otherUserName: conv.otherUserName,
+        avatarUrl: conv.otherUserAvatarUrl
       })
-      
+
       return {
         id: conv.id,
         conversationId: conv.id, // Use id as conversationId
         matchId: conv.matchId,
         userId: conv.otherUserId,
         userName: conv.otherUserName,
-        userAvatar: conv.otherUserAvatar,
+        userAvatar: conv.otherUserAvatarUrl || conv.otherUserAvatar,
         lastMessage: conv.lastMessage || "",
         lastMessageTime: conv.lastMessageTimestamp ? formatMessageTime(conv.lastMessageTimestamp) : "",
         unreadCount: conv.unreadCount || 0,
@@ -190,12 +192,12 @@ export async function getMessages(conversationId: string, page: number = 1, page
         },
       }
     )
-    
+
     console.log("📥 [getMessages] Raw API response:", response.data)
-    
+
     // Handle .NET $values wrapper
     const messages = response.data.$values || response.data
-    
+
     if (!Array.isArray(messages)) {
       console.warn("⚠️ [getMessages] Expected array but got:", messages)
       return []
@@ -214,7 +216,7 @@ export async function getMessages(conversationId: string, page: number = 1, page
     } catch (error) {
       console.error("❌ Failed to parse authUser from localStorage:", error)
     }
-    
+
     console.log(`👤 [getMessages] Current user ID:`, currentUserId)
 
     // Map to frontend format
@@ -225,7 +227,7 @@ export async function getMessages(conversationId: string, page: number = 1, page
         isCurrentUser,
         matches: msg.fromUserId === currentUserId
       })
-      
+
       return {
         id: msg.id,
         senderId: msg.fromUserId,
@@ -235,7 +237,7 @@ export async function getMessages(conversationId: string, page: number = 1, page
         isCurrentUser,
       }
     })
-    
+
     return mappedMessages
   } catch (error: any) {
     console.error(`❌ [getMessages] Failed to fetch messages for conversation ${conversationId}:`, error.response?.data || error.message)
@@ -295,15 +297,15 @@ export async function getUnreadCount(): Promise<number> {
 function formatMessageTime(timestamp: string): string {
   try {
     if (!timestamp) return ""
-    
+
     const messageDate = new Date(timestamp)
-    
+
     // Check if date is valid
     if (isNaN(messageDate.getTime())) {
       console.warn("⚠️ Invalid timestamp:", timestamp)
       return ""
     }
-    
+
     const now = new Date()
     const diffInMs = now.getTime() - messageDate.getTime()
     const diffInHours = diffInMs / (1000 * 60 * 60)

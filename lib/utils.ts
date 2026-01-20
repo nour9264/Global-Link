@@ -21,11 +21,43 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function getAvatarUrl(avatarUrl?: string | null): string | undefined {
   if (!avatarUrl || !avatarUrl.trim()) {
+    console.log('[getAvatarUrl] No URL provided')
     return undefined
   }
 
-  // Delegate to the generic URL normalizer so avatars and media use the same rules
-  return ensureAbsoluteUrl(avatarUrl)
+  const absoluteUrl = ensureAbsoluteUrl(avatarUrl)
+  if (!absoluteUrl) return undefined
+
+  // PROXY LOGIC: If it's an ngrok URL, route through our local proxy
+  if (absoluteUrl.includes("ngrok-free.dev")) {
+    // Use the relative path to our proxy API
+    // We encode the target URL to safely pass it as a query param
+    return `/api/image-proxy?url=${encodeURIComponent(absoluteUrl)}`
+  }
+
+  // Add cache buster if it's our API (non-ngrok)
+  if (absoluteUrl.includes('api/')) {
+    const separator = absoluteUrl.includes('?') ? '&' : '?'
+    return `${absoluteUrl}${separator}t=${new Date().getTime()}`
+  }
+
+  return absoluteUrl
+}
+
+/**
+ * Helper to get a proxied image URL for general images (not just avatars)
+ * enabling ngrok warning bypass.
+ */
+export function getProxiedImageUrl(url?: string | null): string | undefined {
+  if (!url) return undefined
+  const absoluteUrl = ensureAbsoluteUrl(url)
+  if (!absoluteUrl) return undefined
+
+  if (absoluteUrl.includes("ngrok-free.dev")) {
+    return `/api/image-proxy?url=${encodeURIComponent(absoluteUrl)}`
+  }
+
+  return absoluteUrl
 }
 
 /**
@@ -48,6 +80,9 @@ export function ensureAbsoluteUrl(url?: string | null): string | undefined {
   }
 
   // Relative path -> prefix with API base url
-  const cleanUrl = trimmedUrl.startsWith("/") ? trimmedUrl.slice(1) : trimmedUrl
+  // Handle backslashes from Windows paths
+  const normalizedUrl = trimmedUrl.replace(/\\/g, "/")
+  const cleanUrl = normalizedUrl.startsWith("/") ? normalizedUrl.slice(1) : normalizedUrl
+
   return `${API_BASE_URL.replace(/\/$/, "")}/${cleanUrl}`
 }

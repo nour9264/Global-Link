@@ -1,6 +1,6 @@
 import apiClient from "./api-client"
 import { getRequestById } from "./buyer-request-service"
-import { ensureAbsoluteUrl } from "./utils"
+import { ensureAbsoluteUrl, getProxiedImageUrl } from "./utils"
 
 export interface MatchItemDetails {
     matchId?: string
@@ -53,6 +53,7 @@ export async function getMatchItemDetails(matchId: string): Promise<MatchItemDet
 
     const data = response.data
     const req = data.requestItemDetails || {}
+    const trip = data.tripItemDetails || {} // Extract trip details
 
     // Extract requestId to fetch full details if needed
     const requestId = req.requestId || req.id || req.$id
@@ -69,38 +70,46 @@ export async function getMatchItemDetails(matchId: string): Promise<MatchItemDet
     }
 
     // Merge data, preferring fullRequest for missing fields
-    const title = req.title || fullRequest?.title || ""
-    const description = req.description || fullRequest?.description || ""
-    const quantity = req.quantity || req.totalPackages || fullRequest?.totalPackages || 1
-    const price = req.itemValue || req.price || fullRequest?.itemValue || 0
-    const weight = req.weight || req.estimatedTotalWeightKg || fullRequest?.estimatedTotalWeightKg || 0
-    const dimensions = req.dimensions || ""
+    const title = req.title || req.Title || fullRequest?.title || ""
+    const description = req.description || req.Description || fullRequest?.description || ""
+    const quantity = req.quantity || req.Quantity || req.totalPackages || req.TotalPackages || fullRequest?.totalPackages || 1
+    const price = req.itemValue || req.ItemValue || req.price || req.Price || fullRequest?.itemValue || 0
+    const weight = req.weight || req.Weight || req.estimatedTotalWeightKg || req.EstimatedTotalWeightKg || fullRequest?.estimatedTotalWeightKg || 0
+    const dimensions = req.dimensions || req.Dimensions || ""
 
     // Extra fields
-    const isFragile = req.isFragile || fullRequest?.isFragile || false
-    const category = req.category || fullRequest?.category || ""
-    const urgency = req.urgency || fullRequest?.urgency || ""
+    const isFragile = req.isFragile || req.IsFragile || fullRequest?.isFragile || false
+    const category = req.category || req.Category || fullRequest?.category || ""
+    const urgency = req.urgency || req.Urgency || fullRequest?.urgency || ""
 
     // Image handling
-    let imageUrl = req.mainImageUrl || (req.photos && req.photos.length > 0 ? req.photos[0] : "")
+    let imageUrl = req.mainImageUrl || req.MainImageUrl || (req.photos && req.photos.length > 0 ? req.photos[0] : (req.Photos && req.Photos.length > 0 ? req.Photos[0] : ""))
     if (!imageUrl && fullRequest?.photos && fullRequest.photos.length > 0) {
         imageUrl = fullRequest.photos[0]
     }
-    imageUrl = ensureAbsoluteUrl(imageUrl) || ""
+    // Use proxy for ngrok image support
+    imageUrl = getProxiedImageUrl(imageUrl) || ""
 
-    const fromCity = req.fromCity || fullRequest?.fromCity || ""
-    const toCity = req.toCity || fullRequest?.toCity || ""
-    const deliveryDate = req.targetArrivalDate || req.deliveryDate || fullRequest?.targetArrivalDate || ""
+    // Location and date with root-level fallbacks AND trip-level fallbacks
+    // Prioritize request location over trip location if available, but use trip as fallback
+    const fromCity = req.fromCity || req.FromCity || data.fromCity || data.FromCity || trip.fromCity || trip.FromCity || fullRequest?.fromCity || ""
+    const toCity = req.toCity || req.ToCity || data.toCity || data.ToCity || trip.toCity || trip.ToCity || fullRequest?.toCity || ""
+
+    // For date: TargetArrivalDate (Request) > ReturnDate/ArrivalDate (Trip) > DeliveryDate (Root)
+    const deliveryDate = req.targetArrivalDate || req.TargetArrivalDate || req.deliveryDate || req.DeliveryDate ||
+        trip.returnDate || trip.ReturnDate || trip.arrivalDate || trip.ArrivalDate ||
+        data.targetArrivalDate || data.TargetArrivalDate || data.deliveryDate || data.DeliveryDate ||
+        fullRequest?.targetArrivalDate || ""
 
     // Extract buyer and traveler names from the response
-    const buyerName = data.buyerName || ""
-    const travelerName = data.travelerName || ""
-    
+    const buyerName = data.buyerName || data.BuyerName || ""
+    const travelerName = data.travelerName || data.TravelerName || ""
+
     // Extract IDs from root level of response
     const responseMatchId = data.matchId || matchId
-    const buyerId = data.buyerId || ""
-    const travelerId = data.travelerId || ""
-    const extractedRequestId = requestId || data.requestId || req.requestId || ""
+    const buyerId = data.buyerId || data.BuyerId || ""
+    const travelerId = data.travelerId || data.TravelerId || ""
+    const extractedRequestId = requestId || data.requestId || data.RequestId || req.requestId || req.RequestId || ""
 
     console.log("📊 [getMatchItemDetails] Final mapped details:", {
         matchId: responseMatchId, buyerId, travelerId, requestId: extractedRequestId,

@@ -17,6 +17,7 @@ import {
   type Message
 } from "@/lib/chat-service"
 import { useSignalRChat } from "@/hooks/use-signalr-chat"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function BuyerChatPage() {
   // Global debug logger for all SignalR events
@@ -25,6 +26,7 @@ export default function BuyerChatPage() {
       console.log(`[SignalR DEBUG] Event: ${event}`, payload)
     }
   }, [])
+  const { user } = useAuth()
   const [selectedChat, setSelectedChat] = useState<ChatConversation | null>(null)
   const [messageInput, setMessageInput] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -384,7 +386,7 @@ export default function BuyerChatPage() {
   if (!selectedChat) {
     return (
       <BuyerLayout>
-        <div className="h-screen flex flex-col bg-background">
+        <div className="h-full flex flex-col bg-background">
           {/* Search Bar */}
           <div className="p-4 border-b bg-card">
             <div className="relative">
@@ -459,7 +461,7 @@ export default function BuyerChatPage() {
   // Individual Chat View
   return (
     <BuyerLayout>
-      <div className="flex flex-col bg-background relative">
+      <div className="flex flex-col bg-background relative h-full">
         {/* Chat Header */}
         <div className="flex items-center gap-3 p-4 border-b bg-card sticky z-10 top-0">
           <Button
@@ -535,6 +537,7 @@ export default function BuyerChatPage() {
 
                 {message.isCurrentUser && (
                   <Avatar className="w-8 h-8 shrink-0">
+                    <AvatarImage src={getAvatarUrl(user?.avatarUrl)} alt="You" />
                     <AvatarFallback>{message.senderName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                 )}

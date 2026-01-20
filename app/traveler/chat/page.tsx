@@ -17,8 +17,10 @@ import {
   type Message
 } from "@/lib/chat-service"
 import { useSignalRChat } from "@/hooks/use-signalr-chat"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function TravelerChatPage() {
+  const { user } = useAuth()
   const [selectedChat, setSelectedChat] = useState<ChatConversation | null>(null)
   const [messageInput, setMessageInput] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
@@ -371,7 +373,7 @@ export default function TravelerChatPage() {
   if (!selectedChat) {
     return (
       <TravelerLayout>
-        <div className="h-screen flex flex-col bg-background">
+        <div className="h-full flex flex-col bg-background">
           {/* Search Bar */}
           <div className="p-4 border-b bg-card">
             <div className="relative">
@@ -445,7 +447,7 @@ export default function TravelerChatPage() {
   // Individual Chat View
   return (
     <TravelerLayout>
-      <div className="flex flex-col bg-background relative">
+      <div className="flex flex-col bg-background relative h-full">
         {/* Chat Header */}
         <div className="flex items-center gap-3 p-4 border-b bg-card sticky z-10 top-0">
           <Button
@@ -521,6 +523,7 @@ export default function TravelerChatPage() {
 
                 {message.isCurrentUser && (
                   <Avatar className="w-8 h-8 shrink-0">
+                    <AvatarImage src={getAvatarUrl(user?.avatarUrl)} alt="You" />
                     <AvatarFallback>{message.senderName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                 )}

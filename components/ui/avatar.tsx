@@ -32,6 +32,9 @@ function AvatarImage({
         'aspect-square h-full w-full object-cover',
         className,
       )}
+      onError={(e) => {
+        console.error('❌ [Avatar] Image failed to load:', e.currentTarget.src)
+      }}
       {...props}
     />
   )

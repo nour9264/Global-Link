@@ -486,12 +486,28 @@ export default function OffersPage() {
                       {respondOffer.request.fromCity && <div><b className="text-foreground">Route:</b> {respondOffer.request.fromCity}, {respondOffer.request.fromCountry} → {respondOffer.request.toCity}, {respondOffer.request.toCountry}</div>}
                       {respondOffer.request.description && <div><b className="text-foreground">Description:</b> {respondOffer.request.description}</div>}
 
-                      {(respondOffer.request.itemValue !== undefined || respondOffer.request.estimatedTotalWeightKg !== undefined || respondOffer.request.targetArrivalDate) && (
+                      {respondOffer.request.estimatedTotalWeightKg !== undefined && (
+                        <div className="mt-2 pt-2 border-t border-border">
+                          <b className="text-foreground">Package Information:</b><br />
+                          <div>• Weight: {respondOffer.request.estimatedTotalWeightKg} kg</div>
+                        </div>
+                      )}
+
+                      {(respondOffer.request.itemValue !== undefined || respondOffer.request.budgetMax || respondOffer.request.urgency || respondOffer.request.targetArrivalDate) && (
                         <div className="mt-2 pt-2 border-t border-border">
                           <b className="text-foreground">Additional Details:</b><br />
                           {respondOffer.request.itemValue !== undefined && <div>• Item Value: ${respondOffer.request.itemValue}</div>}
-                          {respondOffer.request.estimatedTotalWeightKg !== undefined && <div>• Weight: {respondOffer.request.estimatedTotalWeightKg} kg</div>}
+                          {respondOffer.request.budgetMax !== undefined && <div>• Max Budget: ${respondOffer.request.budgetMax}</div>}
+                          {respondOffer.request.urgency && <div>• Urgency: {respondOffer.request.urgency}</div>}
                           {respondOffer.request.targetArrivalDate && <div>• Target Arrival: {new Date(respondOffer.request.targetArrivalDate as any).toLocaleDateString()}</div>}
+                        </div>
+                      )}
+
+                      {(respondOffer.request.isFragile || respondOffer.request.batteryType) && (
+                        <div className="mt-2 pt-2 border-t border-border">
+                          <b className="text-foreground">Special Handling:</b><br />
+                          {respondOffer.request.isFragile && <div>• ⚠️ Fragile Item</div>}
+                          {respondOffer.request.batteryType && <div>• 🔋 Battery Type: {respondOffer.request.batteryType}</div>}
                         </div>
                       )}
                     </div>

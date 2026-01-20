@@ -83,21 +83,38 @@ export default function BuyerCreateRequestPage() {
       setSubmitting(true)
       const formData = new FormData()
       formData.append("Title", title)
-      if (description) formData.append("Description", description)
-      if (category) formData.append("Category", category)
-      if (itemValue) formData.append("ItemValue", String(parseFloat(itemValue)))
+      formData.append("Description", description || "") // Send empty string if null
+      formData.append("Category", category || "") // Send empty string if null
+
+      // Handle numeric fields - send 0 if empty to avoid null issues
+      formData.append("ItemValue", itemValue ? String(parseFloat(itemValue)) : "0")
+
       formData.append("FromCountry", fromCountry)
       formData.append("FromCity", fromCity)
       formData.append("ToCountry", toCountry)
       formData.append("ToCity", toCity)
-      if (targetArrivalDate) formData.append("TargetArrivalDate", new Date(targetArrivalDate).toISOString())
-      if (budgetMax) formData.append("BudgetMax", String(parseFloat(budgetMax)))
-      if (estimatedTotalWeightKg) formData.append("EstimatedTotalWeightKg", String(parseFloat(estimatedTotalWeightKg)))
+
+      // Date handling
+      if (targetArrivalDate) {
+        formData.append("TargetArrivalDate", new Date(targetArrivalDate).toISOString())
+      } else {
+        // Optional: send a default date if backend requires it? 
+        // For now, assume skipping is fine if nullable, or let backend validation handle it.
+        // If backend fails with "TargetArrivalDate is required", we might need a default.
+      }
+
+      formData.append("BudgetMax", budgetMax ? String(parseFloat(budgetMax)) : "0")
+      formData.append("EstimatedTotalWeightKg", estimatedTotalWeightKg ? String(parseFloat(estimatedTotalWeightKg)) : "0")
       formData.append("IsFragile", String(isFragile))
 
       // Send first image only (backend expects 'Image' field - singular)
       if (uploadedFiles.length > 0) {
         formData.append("Image", uploadedFiles[0])
+      }
+
+      // Debug: Log FormData entries
+      for (const pair of formData.entries()) {
+        console.log(`📦 [FormData] ${pair[0]}:`, pair[1])
       }
 
       // Send the multipart form - don't set Content-Type header, browser will set it with boundary

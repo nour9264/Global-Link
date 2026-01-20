@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { ensureAbsoluteUrl } from "@/lib/utils"
+import { ensureAbsoluteUrl, getProxiedImageUrl } from "@/lib/utils"
 import { MapPin, Calendar, Loader2, Package, ArrowRight, Trash2, DollarSign } from "lucide-react"
 import { getMyRequests, deleteRequest } from "@/lib/buyer-request-service"
 import type { BuyerRequest } from "@/types/buyer-request"
@@ -212,10 +212,11 @@ export default function BuyerRequestsPage() {
               <div className="relative h-32 bg-gradient-to-r from-blue-500 to-cyan-500">
                 {request.photos && request.photos.length > 0 ? (
                   <Image
-                    src={ensureAbsoluteUrl(request.photos[0]) || "/european-city-skyline.jpg"}
+                    src={getProxiedImageUrl(request.photos[0]) || "/european-city-skyline.jpg"}
                     alt={request.title}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 ) : (
                   <Image

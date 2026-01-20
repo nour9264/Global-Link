@@ -18,6 +18,17 @@ const nextConfig = {
       "unceriferous-eda-nonseasonally.ngrok-free.dev",
       "globallink.runasp.net",
     ],
+    // Allow local API proxy with query params
+    localPatterns: [
+      {
+        pathname: '/api/image-proxy',
+        search: '', // Match any query string
+      },
+      {
+        pathname: '/**',
+        search: '',
+      },
+    ],
   },
   // Disable source maps in production to reduce bundle size
   productionBrowserSourceMaps: false,

@@ -246,7 +246,7 @@ export default function AvailableRequestsPage() {
                         return null;
                       })()}
                       <Image
-                        src={utils.ensureAbsoluteUrl(request.photos[0]) || "/placeholder.svg"}
+                        src={utils.getProxiedImageUrl(request.photos[0]) || "/placeholder.svg"}
                         alt={request.title}
                         fill
                         className="object-cover"

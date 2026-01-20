@@ -130,7 +130,7 @@ function OrderStatusContent() {
 
     return (
         <TravelerLayout>
-            <div className="max-w-5xl mx-auto space-y-6">
+            <div className="max-w-5xl mx-auto space-y-6 p-4 md:p-6">
                 {/* Header with Back Button */}
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" onClick={() => router.back()}>
@@ -284,7 +284,7 @@ function OrderStatusContent() {
                             <h2 className="text-xl font-bold text-foreground">{itemDetails?.title}</h2>
                             <div className="flex gap-2">
                                 {itemDetails?.isFragile && (
-                                    <Badge variant="destructive" className="bg-destructive text-destructive-foreground">
+                                    <Badge className="bg-red-500 text-white hover:bg-red-600 border-0">
                                         Fragile
                                     </Badge>
                                 )}

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { getMatchItemDetails, getMatchTracking, getMatchIdByOffer, MatchItemDetails, MatchTracking } from "@/lib/match-service"
 import { getStageIndex, getPollingInterval, debugLog } from "@/lib/order-tracking"
+import { getOfferById } from "@/lib/offer-service"
+import { getRequestById } from "@/lib/buyer-request-service"
 
 interface UseMatchTrackingParams {
   matchIdParam?: string | null
@@ -73,6 +75,42 @@ export function useMatchTracking({ matchIdParam, offerIdParam }: UseMatchTrackin
       if (!itemDetailsLoadedRef.current) {
         debugLog("Fetching item details for", effectiveMatchId)
         details = await getMatchItemDetails(effectiveMatchId)
+
+        // Robust Fallback: If details are missing key fields (like description or deliveryDate)
+        // AND we have an offerId, try to fetch the request directly via the offer.
+        if (offerIdParam && (!details.description || !details.deliveryDate || !details.requestId)) {
+          console.log("⚠️ [useMatchTracking] Missing key details, attempting fallback fetch via offerId:", offerIdParam)
+          try {
+            const offer = await getOfferById(offerIdParam)
+            if (offer && offer.requestId) {
+              const fullRequest = await getRequestById(offer.requestId)
+              console.log("✅ [useMatchTracking] Fallback fetched full request:", fullRequest)
+
+              if (fullRequest) {
+                // Merge missing fields
+                details = {
+                  ...details,
+                  requestId: fullRequest.id || fullRequest.$id || details.requestId,
+                  description: details.description || fullRequest.description || "",
+                  title: details.title || fullRequest.title || "",
+                  deliveryDate: details.deliveryDate || fullRequest.targetArrivalDate || "",
+                  fromCity: details.fromCity || fullRequest.fromCity || "",
+                  toCity: details.toCity || fullRequest.toCity || "",
+                  imageUrl: details.imageUrl || (fullRequest.photos && fullRequest.photos.length > 0 ? fullRequest.photos[0] : "") || "",
+                  quantity: details.quantity || fullRequest.totalPackages || 1,
+                  price: details.price || fullRequest.itemValue || 0,
+                  weight: details.weight || fullRequest.estimatedTotalWeightKg || 0,
+                  isFragile: details.isFragile ?? fullRequest.isFragile,
+                  category: details.category || fullRequest.category || "",
+                  urgency: details.urgency || fullRequest.urgency || "",
+                }
+              }
+            }
+          } catch (fbError) {
+            console.error("❌ [useMatchTracking] Fallback fetch failed:", fbError)
+          }
+        }
+
         setItemDetails(details)
         itemDetailsLoadedRef.current = true
       }
